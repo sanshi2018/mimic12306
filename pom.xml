@@ -16,6 +16,7 @@
     <description>train</description>
     <modules>
         <module>train-member</module>
+        <module>common</module>
     </modules>
     <properties>
         <java.version>17</java.version>
@@ -24,6 +25,15 @@
 
     <dependencyManagement>
         <dependencies>
+
+<!--            管理common模块-->
+            <dependency>
+                <groupId>com.mooc</groupId>
+                <artifactId>common</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+
+
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
@@ -43,6 +53,8 @@
                 <artifactId>hutool-all</artifactId>
                 <version>5.8.10</version>
             </dependency>
+
+
         </dependencies>
 
 
