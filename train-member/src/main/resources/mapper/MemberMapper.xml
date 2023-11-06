@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--在此处配置命名空间程序将xml文件与接口绑定-->
+<mapper namespace="com.jiawa.train.member.mapper.MemberMapper" >
+<!--配置查询所有的sql语句-->
+<!--    id对应方法名字-->
+    <select id="count" resultType="int">
+        select count(1) from member
+    </select>
+
+</mapper>
