@@ -13,7 +13,7 @@ public class TestController {
     MemberService memberService;
 
     @GetMapping("/count")
-    public int hello() {
+    public long hello() {
         return memberService.count();
     }
 }
