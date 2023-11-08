@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.jiawa.train.member.domain.Member;
 import com.jiawa.train.member.domain.MemberExample;
 import com.jiawa.train.member.mapper.MemberMapper;
+import com.jiawa.train.member.req.MemberRegisterReq;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
@@ -20,12 +21,12 @@ public class MemberService {
         return memberMapper.countByExample(null);
     }
 
-    public long register(String mobile) {
+    public long register(MemberRegisterReq req) {
+        String mobile = req.getMobile();
         MemberExample example = new MemberExample();
         example.createCriteria().andMobileEqualTo(mobile);
         List<Member> members = memberMapper.selectByExample(example);
         if (CollUtil.isNotEmpty(members)) {
-
             throw new RuntimeException("该手机号已注册");
 //            throw new Exception("该手机号已注册"); //这样写上层方法需要声明 throws Exception，所以抛出RuntimeException
 //            return members.stream().findFirst().get().getId();
