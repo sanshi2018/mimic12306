@@ -2,6 +2,8 @@ package com.jiawa.train.member.service;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import com.jiawa.train.common.exception.BusinessException;
+import com.jiawa.train.common.exception.EBusinessException;
 import com.jiawa.train.member.domain.Member;
 import com.jiawa.train.member.domain.MemberExample;
 import com.jiawa.train.member.mapper.MemberMapper;
@@ -27,7 +29,8 @@ public class MemberService {
         example.createCriteria().andMobileEqualTo(mobile);
         List<Member> members = memberMapper.selectByExample(example);
         if (CollUtil.isNotEmpty(members)) {
-            throw new RuntimeException("该手机号已注册");
+            throw new BusinessException(EBusinessException.MEMBER_MOBILE_EXIST);
+//            throw new RuntimeException("该手机号已注册");
 //            throw new Exception("该手机号已注册"); //这样写上层方法需要声明 throws Exception，所以抛出RuntimeException
 //            return members.stream().findFirst().get().getId();
         }
