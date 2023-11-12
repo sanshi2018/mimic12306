@@ -69,11 +69,12 @@ public class LogAspect {
             arguments[i] = args[i];
         }
         // 排除字段，敏感字段或太长的字段不显示：身份证、手机号、邮箱、密码等
-        String[] excludeProperties = {"mobile"};
-        PropertyPreFilters filters = new PropertyPreFilters();
-        PropertyPreFilters.MySimplePropertyPreFilter excludefilter = filters.addFilter();
-        excludefilter.addExcludes(excludeProperties);
-        LOG.info("请求参数: {}", JSONObject.toJSONString(arguments, excludefilter));
+//        String[] excludeProperties = {"mobile"};
+//        PropertyPreFilters filters = new PropertyPreFilters();
+//        PropertyPreFilters.MySimplePropertyPreFilter excludefilter = filters.addFilter();
+//        excludefilter.addExcludes(excludeProperties);
+//        LOG.info("请求参数: {}", JSONObject.toJSONString(arguments, excludefilter));
+        LOG.info("请求参数: {}", JSONObject.toJSONString(arguments));
     }
 
     @Around("controllerPointcut()")
@@ -81,11 +82,12 @@ public class LogAspect {
         long startTime = System.currentTimeMillis();
         Object result = proceedingJoinPoint.proceed();
         // 排除字段，敏感字段或太长的字段不显示：身份证、手机号、邮箱、密码等
-        String[] excludeProperties = {"mobile"};
-        PropertyPreFilters filters = new PropertyPreFilters();
-        PropertyPreFilters.MySimplePropertyPreFilter excludefilter = filters.addFilter();
-        excludefilter.addExcludes(excludeProperties);
-        LOG.info("返回结果: {}", JSONObject.toJSONString(result, excludefilter));
+//        String[] excludeProperties = {"mobile"};
+//        PropertyPreFilters filters = new PropertyPreFilters();
+//        PropertyPreFilters.MySimplePropertyPreFilter excludefilter = filters.addFilter();
+//        excludefilter.addExcludes(excludeProperties);
+//        LOG.info("返回结果: {}", JSONObject.toJSONString(result, excludefilter));
+        LOG.info("返回结果: {}", JSONObject.toJSONString(result));
         LOG.info("------------- 结束 耗时：{} ms -------------", System.currentTimeMillis() - startTime);
         return result;
     }

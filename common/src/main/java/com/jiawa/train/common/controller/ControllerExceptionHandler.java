@@ -4,6 +4,7 @@ import com.jiawa.train.common.exception.BusinessException;
 import com.jiawa.train.common.resp.CommonResp;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -29,6 +30,21 @@ public class ControllerExceptionHandler {
         log.error("Exception: {}", e.getMessage(), e);
         resp.setSuccess(false);
         resp.setMessage("系统异常，请联系管理员！");
+        return resp;
+    }
+
+    /**
+     * restfulApi请求方法错误统一处理
+     * @param e 异常
+     * @return CommonResp
+     */
+    @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
+    @ResponseBody
+    public CommonResp<Object> exceptionHandler(HttpRequestMethodNotSupportedException e) {
+        CommonResp<Object> resp  = new CommonResp<>();
+        log.warn("Exception: {}", e.getMessage(), e);
+        resp.setSuccess(false);
+        resp.setMessage("不支持的请求方法: " + e.getMethod());
         return resp;
     }
 
