@@ -27,6 +27,11 @@ public class CommonResp<T> {
         this.content = content;
     }
 
+    public CommonResp<T> success(T content) {
+        this.setSuccess(true);
+        this.setContent(content);
+        return this;
+    }
 
     @Override
     public String toString() {
