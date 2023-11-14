@@ -1,7 +1,9 @@
 package com.jiawa.train.member.service;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.jwt.JWTUtil;
 import com.jiawa.train.common.exception.BusinessException;
 import com.jiawa.train.common.exception.EBusinessException;
 import com.jiawa.train.common.resp.CommonResp;
@@ -17,6 +19,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -86,6 +89,10 @@ public class MemberService {
         }
         MemberLoginResp resp = new MemberLoginResp();
         BeanUtils.copyProperties(memberDB, resp);
+        Map<String, Object> stringObjectMap = BeanUtil.beanToMap(resp);
+        String token = "Jiawa12306";
+        String jwt = JWTUtil.createToken(stringObjectMap, token.getBytes());
+        resp.setToken(jwt);
         return resp;
 //        return new CommonResp<MemberLoginResp>().success(resp);
     }
