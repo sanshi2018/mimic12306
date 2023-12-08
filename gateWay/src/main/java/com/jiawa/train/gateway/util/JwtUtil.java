@@ -1,4 +1,4 @@
-package com.jiawa.train.common.util;
+package com.jiawa.train.gateway.util;
 
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateTime;
