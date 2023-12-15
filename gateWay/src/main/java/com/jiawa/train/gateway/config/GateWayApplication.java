@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 // 因为启动类在config包内，如果未做任何配置，则只能扫描到其所在的包内。
 // 所以需要添加componentScan扫描其他目录
-@ComponentScan("com.jiawa")
+@ComponentScan("com.jiawa.train.gateway")
 public class GateWayApplication {
     public static void main(String[] args) {
         SpringApplication.run(GateWayApplication.class, args);

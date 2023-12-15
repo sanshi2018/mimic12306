@@ -1,4 +1,4 @@
-package com.jiawa.train.member.resp;
+package com.jiawa.train.common.resp;
 
 import lombok.Data;
 

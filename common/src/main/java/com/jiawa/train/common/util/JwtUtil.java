@@ -8,6 +8,7 @@ import cn.hutool.jwt.JWTPayload;
 import cn.hutool.jwt.JWTUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +40,9 @@ public class JwtUtil {
     }
 
     public static boolean validate(String token) {
+        if (token == null || token.isBlank() || token.isEmpty()) {
+            return false;
+        }
         JWT jwt = JWTUtil.parseToken(token).setKey(key.getBytes());
         // validate包含了verify
         boolean validate = jwt.validate(0);

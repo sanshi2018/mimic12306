@@ -1,19 +1,16 @@
-package com.jiawa.train.member.req;
-
-import jakarta.validation.constraints.NotBlank;
+package com.jiawa.train.common.resp;
 
 import java.util.Date;
 
-public class PassengerReq {
+public class PassengerQueryResp {
     private Long id;
 
     private Long memberId;
-    @NotBlank(message = "【名字】不能为空")
+
     private String name;
 
-    @NotBlank(message = "【idCard】不能为空")
     private String idCard;
-    @NotBlank(message = "【type】不能为空")
+
     private String type;
 
     private Date createTime;

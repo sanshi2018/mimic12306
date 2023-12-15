@@ -6,6 +6,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTPayload;
 import cn.hutool.jwt.JWTUtil;
+import io.netty.util.internal.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +41,9 @@ public class JwtUtil {
     }
 
     public static boolean validate(String token) {
+        if (StringUtil.isNullOrEmpty(token)) {
+            return false;
+        }
         JWT jwt = JWTUtil.parseToken(token).setKey(key.getBytes());
         // validate包含了verify
         boolean validate = jwt.validate(0);

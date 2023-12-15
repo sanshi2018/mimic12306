@@ -1,11 +1,14 @@
 package com.jiawa.train.gateway.config;
 
-import com.jiawa.train.gateway.util.JwtUtil;
+import cn.hutool.json.JSONUtil;
+import com.jiawa.train.common.resp.CommonResp;
+import com.jiawa.train.common.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -25,19 +28,20 @@ public class LoginMemberFilter implements GlobalFilter, Ordered {
             log.info("不需要登录验证");
             return chain.filter(exchange);
         }
+
         String token = exchange.getRequest().getHeaders().getFirst("token");
-        if (token == null || token.isEmpty()) {
-            log.info("token为空，需要登录验证");
-            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-            return exchange.getResponse().setComplete();
-        }
-        log.info("token:{}", token);
         // 检验token是否有效，是否过期
-        boolean validate = JwtUtil.validate(token);
-        if (!validate) {
-            log.info("token无效，需要登录验证");
-            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-            return exchange.getResponse().setComplete();
+        if (!JwtUtil.validate(token)) {
+
+            ServerHttpResponse response = exchange.getResponse();
+            exchange.getResponse().setStatusCode(HttpStatus.OK);
+            response.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
+
+            CommonResp resp = new CommonResp();
+            resp.setSuccess(false);
+            resp.setMessage("token无效，请重新登陆");
+            return response.writeWith(Mono.just(response
+                    .bufferFactory().wrap(JSONUtil.toJsonStr(resp).getBytes())));
         }
         return chain.filter(exchange);
 
