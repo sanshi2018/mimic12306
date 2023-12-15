@@ -4,7 +4,9 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.jiawa.train.common.context.LoginMemberContext;
+import com.jiawa.train.common.resp.PageResp;
 import com.jiawa.train.common.resp.PassengerQueryResp;
 import com.jiawa.train.common.util.SnowUtil;
 import com.jiawa.train.member.entity.Passenger;
@@ -36,14 +38,24 @@ public class PassengerService {
         return passenger.getId();
     }
 
-    public List<PassengerQueryResp> queryList(PassengerQueryReq req) {
+    public PageResp<PassengerQueryResp> queryList(PassengerQueryReq req) {
         PassengerExample example = new PassengerExample();
         PassengerExample.Criteria criteria = example.createCriteria();
         if (ObjectUtil.isNotNull(req.getMemberId())) {
             criteria.andMemberIdEqualTo(req.getMemberId());
         }
-        PageHelper.startPage(2, 2);
+        // 拦截最近的sql查询，进行分页
+        PageHelper.startPage(req.getPage(), req.getSize());
         List<Passenger> passengers = passengerMapper.selectByExample(example);
-        return BeanUtil.copyToList(passengers, PassengerQueryResp.class);
+        // 获取查询详情
+        PageInfo<Passenger> pageInfo = new PageInfo<>(passengers);
+
+        List<PassengerQueryResp> list = BeanUtil.copyToList(passengers, PassengerQueryResp.class);
+
+        PageResp<PassengerQueryResp> pageResp = new PageResp<>();
+        pageResp.setTotal(pageInfo.getTotal());
+        pageResp.setList(list);
+        return pageResp;
+
     }
 }

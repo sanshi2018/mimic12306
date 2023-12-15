@@ -1,5 +1,6 @@
 package com.jiawa.train.gateway.config;
 
+import cn.hutool.json.JSONException;
 import cn.hutool.json.JSONUtil;
 import com.jiawa.train.common.resp.CommonResp;
 import com.jiawa.train.common.util.JwtUtil;
@@ -30,8 +31,14 @@ public class LoginMemberFilter implements GlobalFilter, Ordered {
         }
 
         String token = exchange.getRequest().getHeaders().getFirst("token");
+        boolean verify = false;
+        try {
+            verify = JwtUtil.validate(token);
+        }catch (JSONException e) {
+            log.warn("token = {}, 解析异常:{}", token, e.getMessage());
+        }
         // 检验token是否有效，是否过期
-        if (!JwtUtil.validate(token)) {
+        if (!verify) {
 
             ServerHttpResponse response = exchange.getResponse();
             exchange.getResponse().setStatusCode(HttpStatus.OK);

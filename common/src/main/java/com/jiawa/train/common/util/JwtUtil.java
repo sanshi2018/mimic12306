@@ -2,6 +2,7 @@ package com.jiawa.train.common.util;
 
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.json.JSONException;
 import cn.hutool.json.JSONObject;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTPayload;
@@ -39,7 +40,7 @@ public class JwtUtil {
         return token;
     }
 
-    public static boolean validate(String token) {
+    public static boolean validate(String token) throws JSONException {
         if (token == null || token.isBlank() || token.isEmpty()) {
             return false;
         }
