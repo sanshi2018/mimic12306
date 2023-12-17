@@ -30,16 +30,22 @@ public class PassengerService {
         DateTime now = DateTime.now();
 
         Passenger passenger = BeanUtil.copyProperties(req, Passenger.class);
-        passenger.setMemberId(LoginMemberContext.getId());
-        passenger.setId(SnowUtil.getId());
-        passenger.setCreateTime(now);
         passenger.setUpdateTime(now);
-        passengerMapper.insert(passenger);
+        if(ObjectUtil.isNotNull(passenger.getId())) {
+            passenger.setMemberId(LoginMemberContext.getId());
+            passenger.setId(SnowUtil.getId());
+            passenger.setCreateTime(now);
+            passengerMapper.insert(passenger);
+        } else {
+            passengerMapper.updateByPrimaryKey(passenger);
+        }
+
         return passenger.getId();
     }
 
     public PageResp<PassengerQueryResp> queryList(PassengerQueryReq req) {
         PassengerExample example = new PassengerExample();
+        example.setOrderByClause("id desc");
         PassengerExample.Criteria criteria = example.createCriteria();
         if (ObjectUtil.isNotNull(req.getMemberId())) {
             criteria.andMemberIdEqualTo(req.getMemberId());
