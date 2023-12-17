@@ -31,7 +31,7 @@ public class PassengerService {
 
         Passenger passenger = BeanUtil.copyProperties(req, Passenger.class);
         passenger.setUpdateTime(now);
-        if(ObjectUtil.isNotNull(passenger.getId())) {
+        if(ObjectUtil.isNull(passenger.getId())) {
             passenger.setMemberId(LoginMemberContext.getId());
             passenger.setId(SnowUtil.getId());
             passenger.setCreateTime(now);
@@ -41,6 +41,10 @@ public class PassengerService {
         }
 
         return passenger.getId();
+    }
+
+    public int delete(Long id) {
+        return passengerMapper.deleteByPrimaryKey(id);
     }
 
     public PageResp<PassengerQueryResp> queryList(PassengerQueryReq req) {
