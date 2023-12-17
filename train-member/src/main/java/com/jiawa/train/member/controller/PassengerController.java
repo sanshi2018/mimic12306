@@ -5,7 +5,7 @@ import com.jiawa.train.common.resp.CommonResp;
 import com.jiawa.train.common.resp.PageResp;
 import com.jiawa.train.common.resp.PassengerQueryResp;
 import com.jiawa.train.member.req.PassengerQueryReq;
-import com.jiawa.train.member.req.PassengerReq;
+import com.jiawa.train.member.req.PassengerSaveReq;
 import com.jiawa.train.member.service.PassengerService;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/passenger")
 public class PassengerController {
@@ -24,7 +22,7 @@ public class PassengerController {
     private PassengerService passengerService;
 
     @PostMapping("/save")
-    public CommonResp<Long> save(@Valid @RequestBody PassengerReq req) {
+    public CommonResp<Long> save(@Valid @RequestBody PassengerSaveReq req) {
         Long id = passengerService.save(req);
         return new CommonResp<Long>(id);
     }

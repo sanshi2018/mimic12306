@@ -13,7 +13,7 @@ import com.jiawa.train.member.entity.Passenger;
 import com.jiawa.train.member.entity.PassengerExample;
 import com.jiawa.train.member.mapper.PassengerMapper;
 import com.jiawa.train.member.req.PassengerQueryReq;
-import com.jiawa.train.member.req.PassengerReq;
+import com.jiawa.train.member.req.PassengerSaveReq;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class PassengerService {
     @Resource
     PassengerMapper passengerMapper;
 
-    public Long save(PassengerReq req) {
+    public Long save(PassengerSaveReq req) {
         DateTime now = DateTime.now();
 
         Passenger passenger = BeanUtil.copyProperties(req, Passenger.class);
