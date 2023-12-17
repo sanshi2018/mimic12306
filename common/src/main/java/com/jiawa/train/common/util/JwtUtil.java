@@ -24,7 +24,7 @@ public class JwtUtil {
 
     public static String createToken(Long id, String mobile) {
         DateTime now = DateTime.now();
-        DateTime expTime = now.offsetNew(DateField.MINUTE, 15);
+        DateTime expTime = now.offsetNew(DateField.HOUR, 15);
         Map<String, Object> payload = new HashMap<>();
         // 签发时间
         payload.put(JWTPayload.ISSUED_AT, now);
