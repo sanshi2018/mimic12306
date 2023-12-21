@@ -13,8 +13,10 @@ import org.dom4j.io.SAXReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ServerGenerator {
     static String serverPath = "[module]/src/main/java/com/jiawa/train/member/";
@@ -78,6 +80,7 @@ public class ServerGenerator {
         // 数据库------------
         String tableComment = DbUtil.getTableComment(tableName.getText());
         List<Field> fieldList = DbUtil.getColumnByTableName(tableName.getText());
+        Set<String> typeSet = getJavaType(fieldList);
         // 数据库------------
 
         // 组装参数
@@ -85,20 +88,38 @@ public class ServerGenerator {
         param.put("Domain", Domain);
         param.put("domain", domain);
         param.put("do_main", do_main);
+
+        param.put("tableNameCn", tableComment);
+        param.put("typeSet", typeSet);
+        param.put("fieldList", fieldList);
+
         System.out.println("组装参数：" + param);
 
-        gen(Domain, param, "controller");
-        gen(Domain, param, "service");
+//        gen(Domain, param, "controller", "controller");
+//        gen(Domain, param, "service", "service");
+        gen(Domain, param, "req", "saveReq");
 
 
 
     }
 
-    private static void gen(String Domain, Map<String, Object> param, String target) throws IOException, TemplateException {
+    /**
+     * 获得所有的java类型
+     * @param fieldList 字段列表
+     */
+    static Set<String> getJavaType(List<Field> fieldList) {
+        Set<String> set = new HashSet<>();
+        fieldList.forEach(field -> {
+            set.add(field.getJavaType());
+        });
+        return set;
+    }
+
+    private static void gen(String Domain, Map<String, Object> param, String packageName,  String target) throws IOException, TemplateException {
         // 定义模板
         FreemarkerUtil.initConfig(target+".ftl");
         // 创建目标路径
-        String toPath = serverPath + target + "/";
+        String toPath = serverPath + packageName + "/";
         new File(toPath).mkdirs();
         // 类名首字母大写
         String Target = target.substring(0, 1).toUpperCase() + target.substring(1);

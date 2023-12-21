@@ -1,33 +1,59 @@
 package com.jiawa.train.member.req;
 
+import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Date;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Getter
 @Setter
 public class PassengerSaveReq {
+
+    /**
+     * id
+     */
     private Long id;
 
+    /**
+     * 会员id
+     */
+    @NotNull(message = "【会员id】不能为空")
     private Long memberId;
-    @NotBlank(message = "【名字】不能为空")
+
+    /**
+     * 姓名
+     */
+    @NotBlank(message = "【姓名】不能为空")
     private String name;
 
-    @NotBlank(message = "【idCard】不能为空")
+    /**
+     * 身份证号
+     */
+    @NotBlank(message = "【身份证号】不能为空")
     private String idCard;
 
-    @NotBlank(message = "【type】不能为空")
+    /**
+     * 旅客类型|枚举[PassengerTypeEnum]
+     */
+    @NotBlank(message = "【旅客类型】不能为空")
     private String type;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    /**
+     * 创建时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @NotNull(message = "【创建时间】不能为空")
     private Date createTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    /**
+     * 更新时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @NotNull(message = "【更新时间】不能为空")
     private Date updateTime;
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
