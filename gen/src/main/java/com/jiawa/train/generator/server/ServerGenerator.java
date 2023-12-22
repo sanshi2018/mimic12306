@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class ServerGenerator {
+    static boolean readOnly = false;
+    static String vuePath = "web/tem/";
     static String serverPath = "[module]/src/main/java/com/jiawa/train/member/";
     static String pomPath ="gen/pom.xml";
     static {
@@ -88,16 +90,22 @@ public class ServerGenerator {
         param.put("Domain", Domain);
         param.put("domain", domain);
         param.put("do_main", do_main);
+        param.put("module", "common");
 
         param.put("tableNameCn", tableComment);
         param.put("typeSet", typeSet);
         param.put("fieldList", fieldList);
+        param.put("readOnly", readOnly);
 
         System.out.println("组装参数：" + param);
 
 //        gen(Domain, param, "controller", "controller");
 //        gen(Domain, param, "service", "service");
-        gen(Domain, param, "req", "saveReq");
+//        gen(Domain, param, "req", "saveReq");
+//        gen(Domain, param, "req", "queryReq");
+//        gen(Domain, param, "resp", "queryResp");
+
+        genVue(do_main, param);
 
 
 
@@ -128,6 +136,15 @@ public class ServerGenerator {
         System.out.println("开始生成：" + fileNeme);
         FreemarkerUtil.generator(fileNeme, param);
     }
+
+    private static void genVue(String do_main, Map<String, Object> param) throws IOException, TemplateException {
+        FreemarkerUtil.initConfig("vue.ftl");
+        new File(vuePath).mkdirs();
+        String fileName = vuePath + do_main + ".vue";
+        System.out.println("开始生成：" + fileName);
+        FreemarkerUtil.generator(fileName, param);
+    }
+
 
     private static Node getGeneratorPath() throws DocumentException {
         SAXReader saxReader = new SAXReader();

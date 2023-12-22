@@ -11,6 +11,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class PassengerQueryResp {
+    // 前端number为16位置，超过16位会丢失精度，所以需要为字符串将long传给前端
     @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
     @JsonSerialize(using= ToStringSerializer.class)

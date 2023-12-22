@@ -1,4 +1,4 @@
-package com.jiawa.train.member.service;
+package com.jiawa.train.${module}.service;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
@@ -9,11 +9,11 @@ import com.jiawa.train.common.context.LoginMemberContext;
 import com.jiawa.train.common.resp.PageResp;
 import com.jiawa.train.common.resp.${Domain}QueryResp;
 import com.jiawa.train.common.util.SnowUtil;
-import com.jiawa.train.member.entity.${Domain};
-import com.jiawa.train.member.entity.${Domain}Example;
-import com.jiawa.train.member.mapper.${Domain}Mapper;
-import com.jiawa.train.member.req.${Domain}QueryReq;
-import com.jiawa.train.member.req.${Domain}SaveReq;
+import com.jiawa.train.${module}.entity.${Domain};
+import com.jiawa.train.${module}.entity.${Domain}Example;
+import com.jiawa.train.${module}.mapper.${Domain}Mapper;
+import com.jiawa.train.${module}.req.${Domain}QueryReq;
+import com.jiawa.train.${module}.req.${Domain}SaveReq;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,7 +32,6 @@ public class ${Domain}Service {
         ${Domain} ${domain} = BeanUtil.copyProperties(req, ${Domain}.class);
         ${domain}.setUpdateTime(now);
         if(ObjectUtil.isNull(${domain}.getId())) {
-            ${domain}.setMemberId(LoginMemberContext.getId());
             ${domain}.setId(SnowUtil.getId());
             ${domain}.setCreateTime(now);
             ${domain}Mapper.insert(${domain});
@@ -51,9 +50,7 @@ public class ${Domain}Service {
         ${Domain}Example example = new ${Domain}Example();
         example.setOrderByClause("id desc");
         ${Domain}Example.Criteria criteria = example.createCriteria();
-        if (ObjectUtil.isNotNull(req.getMemberId())) {
-            criteria.andMemberIdEqualTo(req.getMemberId());
-        }
+
         // 拦截最近的sql查询，进行分页
         PageHelper.startPage(req.getPage(), req.getSize());
         List<${Domain}> ${domain}s = ${domain}Mapper.selectByExample(example);
