@@ -24,25 +24,25 @@
 
         <!-- 配置数据源，需要根据自己的项目修改 -->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://192.168.50.193/train_member?characterEncoding=UTF8&amp;autoReconnect=true&amp;serverTimezone=Asia/Shanghai&amp;useSSL=false"
-                        userId="train_member"
+                        connectionURL="jdbc:mysql://192.168.50.193/train_business?characterEncoding=UTF8&amp;autoReconnect=true&amp;serverTimezone=Asia/Shanghai&amp;useSSL=false"
+                        userId="train_business"
                         password="root">
         </jdbcConnection>
 
         <!-- domain类的位置 targetProject是相对pom.xml的路径-->
-        <javaModelGenerator targetProject="../train-member/src/main/java"
-                            targetPackage="com.jiawa.train.member.entity"/>
+        <javaModelGenerator targetProject="../business/src/main/java"
+                            targetPackage="com.jiawa.train.business.entity"/>
 
         <!-- mapper xml的位置 targetProject是相对pom.xml的路径 -->
-        <sqlMapGenerator targetProject="../train-member/src/main/resources"
+        <sqlMapGenerator targetProject="../business/src/main/resources"
                          targetPackage="mapper"/>
 
         <!-- mapper类的位置 targetProject是相对pom.xml的路径, type表示所有的sql都放在xml里面 -->
-        <javaClientGenerator targetProject="../train-member/src/main/java"
-                             targetPackage="com.jiawa.train.member.mapper"
+        <javaClientGenerator targetProject="../business/src/main/java"
+                             targetPackage="com.jiawa.train.business.mapper"
                              type="XMLMAPPER"/>
         <!-- 表名:类名-->
-<!--        <table tableName="member" domainObjectName="Member"/>-->
-        <table tableName="passenger" domainObjectName="Passenger"/>
+<!--        <table tableName="business" domainObjectName="business"/>-->
+        <table tableName="member" domainObjectName="Member"/>
     </context>
 </generatorConfiguration>
