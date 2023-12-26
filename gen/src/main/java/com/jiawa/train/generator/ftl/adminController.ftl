@@ -1,9 +1,9 @@
-package com.jiawa.train.${module}.controller;
+package com.jiawa.train.${module}.controller.admin;
 
 import com.jiawa.train.common.context.LoginMemberContext;
 import com.jiawa.train.common.resp.CommonResp;
 import com.jiawa.train.common.resp.PageResp;
-import com.jiawa.train.common.resp.${Domain}QueryResp;
+import com.jiawa.train.${module}.resp.${Domain}QueryResp;
 import com.jiawa.train.${module}.req.${Domain}QueryReq;
 import com.jiawa.train.${module}.req.${Domain}SaveReq;
 import com.jiawa.train.${module}.service.${Domain}Service;
@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/${domain}")
-public class ${Domain}Controller {
+@RequestMapping("/admin/${domain}")
+public class ${Domain}AdminController {
     @Resource
     private ${Domain}Service ${domain}Service;
 
@@ -38,7 +38,6 @@ public class ${Domain}Controller {
 
     @GetMapping("/query-list")
     public CommonResp<PageResp<${Domain}QueryResp>> queryList(@Valid ${Domain}QueryReq req) {
-        req.setMemberId(LoginMemberContext.getId());
         PageResp<${Domain}QueryResp> ${domain}s = ${domain}Service.queryList(req);
         return new CommonResp<>(${domain}s);
     }

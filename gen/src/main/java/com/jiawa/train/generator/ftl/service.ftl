@@ -7,7 +7,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jiawa.train.common.context.LoginMemberContext;
 import com.jiawa.train.common.resp.PageResp;
-import com.jiawa.train.common.resp.${Domain}QueryResp;
+import com.jiawa.train.${module}.resp.${Domain}QueryResp;
 import com.jiawa.train.common.util.SnowUtil;
 import com.jiawa.train.${module}.entity.${Domain};
 import com.jiawa.train.${module}.entity.${Domain}Example;
