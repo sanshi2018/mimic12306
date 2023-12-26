@@ -40,7 +40,8 @@ public class TrainQueryResp {
     /**
      * 出发时间
      */
-    private String startTime;
+    @JsonFormat(pattern = "HH:mm:ss",timezone = "GMT+8")
+    private Date startTime;
 
     /**
      * 终点站
@@ -55,7 +56,8 @@ public class TrainQueryResp {
     /**
      * 到站时间
      */
-    private String endTime;
+    @JsonFormat(pattern = "HH:mm:ss",timezone = "GMT+8")
+    private Date endTime;
 
     /**
      * 新增时间
