@@ -23,7 +23,7 @@ public class TrainCarriageQueryResp {
     private String trainCode;
 
     /**
-     * 箱号
+     * 厢号
      */
     private Integer index;
 
@@ -45,7 +45,7 @@ public class TrainCarriageQueryResp {
     /**
      * 列数
      */
-    private Integer columnCount;
+    private Integer colCount;
 
     /**
      * 新增时间
@@ -71,7 +71,7 @@ public class TrainCarriageQueryResp {
         sb.append(", seatType=").append(seatType);
         sb.append(", seatCount=").append(seatCount);
         sb.append(", rowCount=").append(rowCount);
-        sb.append(", columnCount=").append(columnCount);
+        sb.append(", colCount=").append(colCount);
         sb.append(", createTime=").append(createTime);
         sb.append(", updateTime=").append(updateTime);
         sb.append("]");
