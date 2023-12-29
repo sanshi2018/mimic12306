@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/admin/train")
 public class TrainAdminController {
@@ -40,5 +42,11 @@ public class TrainAdminController {
     public CommonResp<PageResp<TrainQueryResp>> queryList(@Valid TrainQueryReq req) {
         PageResp<TrainQueryResp> trains = trainService.queryList(req);
         return new CommonResp<>(trains);
+    }
+
+    @GetMapping("/query-all")
+    public CommonResp<List<TrainQueryResp>> queryList() {
+        List<TrainQueryResp> list = trainService.queryAll();
+        return new CommonResp<List<TrainQueryResp>>(list);
     }
 }

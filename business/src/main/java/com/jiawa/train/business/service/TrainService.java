@@ -65,4 +65,11 @@ public class TrainService {
         return pageResp;
 
     }
+
+    public List<TrainQueryResp> queryAll() {
+        TrainExample example = new TrainExample();
+        example.setOrderByClause("code desc");
+        List<Train> trains = trainMapper.selectByExample(example);
+        return BeanUtil.copyToList(trains, TrainQueryResp.class);
+    }
 }
