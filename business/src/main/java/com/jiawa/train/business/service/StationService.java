@@ -65,4 +65,11 @@ public class StationService {
         return pageResp;
 
     }
+
+    public List<StationQueryResp> queryAll() {
+        StationExample example = new StationExample();
+        example.setOrderByClause("name_pinyin asc");
+        List<Station> stations = stationMapper.selectByExample(example);
+        return BeanUtil.copyToList(stations, StationQueryResp.class);
+    }
 }

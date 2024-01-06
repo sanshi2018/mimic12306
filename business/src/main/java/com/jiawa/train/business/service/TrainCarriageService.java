@@ -3,6 +3,7 @@ package com.jiawa.train.business.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jiawa.train.common.context.LoginMemberContext;
@@ -48,8 +49,12 @@ public class TrainCarriageService {
 
     public PageResp<TrainCarriageQueryResp> queryList(TrainCarriageQueryReq req) {
         TrainCarriageExample example = new TrainCarriageExample();
-        example.setOrderByClause("id desc");
+//        example.setOrderByClause("id desc");
+        example.setOrderByClause("train_code asc, `index` asc");
         TrainCarriageExample.Criteria criteria = example.createCriteria();
+        if (StrUtil.isNotEmpty(req.getTrainCode())) {
+            criteria.andTrainCodeEqualTo(req.getTrainCode());
+        }
 
         // 拦截最近的sql查询，进行分页
         PageHelper.startPage(req.getPage(), req.getSize());

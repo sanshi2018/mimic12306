@@ -14,4 +14,4 @@ mybatis:
 
 logging:
   level:
-    com.jiawa.train.member.mapper: trace
+    com.jiawa.train.business.mapper: trace

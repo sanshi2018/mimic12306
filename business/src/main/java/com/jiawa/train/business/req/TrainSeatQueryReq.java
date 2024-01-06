@@ -6,10 +6,14 @@ import lombok.Setter;
 
 public class TrainSeatQueryReq extends PageReq {
 
-    
+    @Getter
+    @Setter
+    private String trainCode;
+
     @Override
     public String toString() {
         return "TrainSeatQueryReq{" +
+                "trainCode='" + trainCode + '\'' +
                 "} " + super.toString();
     }
 }

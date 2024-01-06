@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/admin/station")
 public class StationAdminController {
@@ -41,4 +43,11 @@ public class StationAdminController {
         PageResp<StationQueryResp> stations = stationService.queryList(req);
         return new CommonResp<>(stations);
     }
+
+    @GetMapping("query-all")
+    public CommonResp<List<StationQueryResp>> queryAll() {
+        List<StationQueryResp> list = stationService.queryAll();
+        return new CommonResp<List<StationQueryResp>>(list);
+    }
+
 }

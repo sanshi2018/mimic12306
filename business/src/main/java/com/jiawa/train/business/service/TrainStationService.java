@@ -3,6 +3,7 @@ package com.jiawa.train.business.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jiawa.train.common.context.LoginMemberContext;
@@ -17,6 +18,7 @@ import com.jiawa.train.business.req.TrainStationSaveReq;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -48,9 +50,14 @@ public class TrainStationService {
 
     public PageResp<TrainStationQueryResp> queryList(TrainStationQueryReq req) {
         TrainStationExample example = new TrainStationExample();
-        example.setOrderByClause("id desc");
+//        example.setOrderByClause("id desc");
+        example.setOrderByClause("train_code asc, 'index' asc");
+
         TrainStationExample.Criteria criteria = example.createCriteria();
 
+        if (StrUtil.isNotEmpty(req.getTrainCode())) {
+            criteria.andTrainCodeEqualTo(req.getTrainCode());
+        }
         // 拦截最近的sql查询，进行分页
         PageHelper.startPage(req.getPage(), req.getSize());
         List<TrainStation> trainStations = trainStationMapper.selectByExample(example);
