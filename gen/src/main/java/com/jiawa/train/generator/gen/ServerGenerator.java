@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class ServerGenerator {
-    static boolean readOnly = false;
+    static boolean readOnly = true;
     static String vuePath = "web/tem/";
     static String module = "business";
     static String serverPath = "[module]/src/main/java/com/jiawa/train/"+module+"/";
@@ -100,11 +100,11 @@ public class ServerGenerator {
 
         System.out.println("组装参数：" + param);
 
-        gen(Domain, param, "controller/admin", "adminController");
-        gen(Domain, param, "service", "service");
-        gen(Domain, param, "req", "saveReq");
-        gen(Domain, param, "req", "queryReq");
-        gen(Domain, param, "resp", "queryResp");
+//        gen(Domain, param, "controller/admin", "adminController");
+//        gen(Domain, param, "service", "service");
+//        gen(Domain, param, "req", "saveReq");
+//        gen(Domain, param, "req", "queryReq");
+//        gen(Domain, param, "resp", "queryResp");
 
         genVue(do_main, param);
 
