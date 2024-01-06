@@ -70,4 +70,11 @@ public class TrainCarriageService {
         return pageResp;
 
     }
+
+    public List<TrainCarriage> selectByTrainCode(String trainCode) {
+        TrainCarriageExample example = new TrainCarriageExample();
+        TrainCarriageExample.Criteria criteria = example.createCriteria();
+        criteria.andTrainCodeEqualTo(trainCode);
+        return trainCarriageMapper.selectByExample(example);
+    }
 }

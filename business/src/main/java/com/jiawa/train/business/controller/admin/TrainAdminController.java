@@ -1,5 +1,6 @@
 package com.jiawa.train.business.controller.admin;
 
+import com.jiawa.train.business.service.TrainSeatService;
 import com.jiawa.train.common.context.LoginMemberContext;
 import com.jiawa.train.common.resp.CommonResp;
 import com.jiawa.train.common.resp.PageResp;
@@ -25,6 +26,9 @@ public class TrainAdminController {
     @Resource
     private TrainService trainService;
 
+    @Resource
+    private TrainSeatService trainSeatService;
+
     @PostMapping("/save")
     public CommonResp<Long> save(@Valid @RequestBody TrainSaveReq req) {
         Long id = trainService.save(req);
@@ -48,5 +52,10 @@ public class TrainAdminController {
     public CommonResp<List<TrainQueryResp>> queryList() {
         List<TrainQueryResp> list = trainService.queryAll();
         return new CommonResp<List<TrainQueryResp>>(list);
+    }
+    @GetMapping("/gen-seat/{trainCode}")
+    public CommonResp<Object> genSeat(@PathVariable String trainCode) {
+        trainSeatService.genTrainSeat(trainCode);
+        return new CommonResp<>();
     }
 }
