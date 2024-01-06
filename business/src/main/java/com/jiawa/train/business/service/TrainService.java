@@ -1,11 +1,14 @@
 package com.jiawa.train.business.service;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jiawa.train.common.context.LoginMemberContext;
+import com.jiawa.train.common.exception.BusinessException;
+import com.jiawa.train.common.exception.EBusinessException;
 import com.jiawa.train.common.resp.PageResp;
 import com.jiawa.train.business.resp.TrainQueryResp;
 import com.jiawa.train.common.util.SnowUtil;
@@ -29,6 +32,11 @@ public class TrainService {
     public Long save(TrainSaveReq req) {
         DateTime now = DateTime.now();
 
+        // 保存之前，先校验唯一键是否存在
+        Train trainDB = selectByUnique(req.getCode());
+        if (ObjectUtil.isNotEmpty(trainDB)) {
+            throw new BusinessException(EBusinessException.BUSINESS_TRAIN_CODE_UNIQUE_ERROR);
+        }
         Train train = BeanUtil.copyProperties(req, Train.class);
         train.setUpdateTime(now);
         if(ObjectUtil.isNull(train.getId())) {
@@ -71,5 +79,17 @@ public class TrainService {
         example.setOrderByClause("code asc");
         List<Train> trains = trainMapper.selectByExample(example);
         return BeanUtil.copyToList(trains, TrainQueryResp.class);
+    }
+
+    private Train selectByUnique(String code) {
+        TrainExample trainExample = new TrainExample();
+        trainExample.createCriteria()
+                .andCodeEqualTo(code);
+        List<Train> list = trainMapper.selectByExample(trainExample);
+        if (CollUtil.isNotEmpty(list)) {
+            return list.get(0);
+        } else {
+            return null;
+        }
     }
 }

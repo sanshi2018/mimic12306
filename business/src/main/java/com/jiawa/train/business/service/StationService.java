@@ -1,11 +1,14 @@
 package com.jiawa.train.business.service;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jiawa.train.common.context.LoginMemberContext;
+import com.jiawa.train.common.exception.BusinessException;
+import com.jiawa.train.common.exception.EBusinessException;
 import com.jiawa.train.common.resp.PageResp;
 import com.jiawa.train.business.resp.StationQueryResp;
 import com.jiawa.train.common.util.SnowUtil;
@@ -29,6 +32,12 @@ public class StationService {
     public Long save(StationSaveReq req) {
         DateTime now = DateTime.now();
 
+        // 保存前校验唯一建是否存在
+        Station stationDB = selectByUnique(req);
+        if (ObjectUtil.isNotEmpty(stationDB)) {
+            throw new BusinessException(EBusinessException.BUSINESS_STATION_NAME_UNIQUE_ERROR);
+        }
+
         Station station = BeanUtil.copyProperties(req, Station.class);
         station.setUpdateTime(now);
         if(ObjectUtil.isNull(station.getId())) {
@@ -40,6 +49,17 @@ public class StationService {
         }
 
         return station.getId();
+    }
+
+    private Station selectByUnique(StationSaveReq req) {
+        StationExample stationExample = new StationExample();
+        stationExample.createCriteria().andNameEqualTo(req.getName());
+        List<Station> list = stationMapper.selectByExample(stationExample);
+        if (CollUtil.isNotEmpty(list)) {
+            return list.get(0);
+        } else {
+            return null;
+        }
     }
 
     public int delete(Long id) {
