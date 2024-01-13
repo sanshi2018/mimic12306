@@ -56,7 +56,7 @@ public class TrainService {
 
     public PageResp<TrainQueryResp> queryList(TrainQueryReq req) {
         TrainExample example = new TrainExample();
-        example.setOrderByClause("id desc");
+        example.setOrderByClause("code asc");
         TrainExample.Criteria criteria = example.createCriteria();
 
         // 拦截最近的sql查询，进行分页
