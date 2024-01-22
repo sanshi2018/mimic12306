@@ -2,6 +2,7 @@ package com.jiawa.train.business.service;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -48,8 +49,15 @@ public class DailyTrainStationService {
 
     public PageResp<DailyTrainStationQueryResp> queryList(DailyTrainStationQueryReq req) {
         DailyTrainStationExample example = new DailyTrainStationExample();
-        example.setOrderByClause("id desc");
+        example.setOrderByClause("date desc, train_code asc, `index` asc");
         DailyTrainStationExample.Criteria criteria = example.createCriteria();
+        if (ObjUtil.isNotNull(req.getDate())) {
+            criteria.andDateEqualTo(req.getDate());
+        }
+
+        if (ObjectUtil.isNotNull(req.getTrainCode())) {
+            criteria.andTrainCodeEqualTo(req.getTrainCode());
+        }
 
         // 拦截最近的sql查询，进行分页
         PageHelper.startPage(req.getPage(), req.getSize());
