@@ -48,8 +48,12 @@ public class DailyTrainSeatService {
 
     public PageResp<DailyTrainSeatQueryResp> queryList(DailyTrainSeatQueryReq req) {
         DailyTrainSeatExample example = new DailyTrainSeatExample();
-        example.setOrderByClause("id desc");
+        example.setOrderByClause("train_code asc, carriage_index asc, carriage_seat_index asc");
         DailyTrainSeatExample.Criteria criteria = example.createCriteria();
+        if (ObjectUtil.isNotNull(req.getTrainCode()))
+        {
+            criteria.andTrainCodeEqualTo(req.getTrainCode());
+        }
 
         // 拦截最近的sql查询，进行分页
         PageHelper.startPage(req.getPage(), req.getSize());
