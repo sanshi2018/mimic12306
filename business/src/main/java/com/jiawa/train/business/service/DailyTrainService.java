@@ -1,10 +1,15 @@
 package com.jiawa.train.business.service;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.jiawa.train.business.entity.Train;
+import com.jiawa.train.business.entity.TrainExample;
+import com.jiawa.train.business.mapper.TrainMapper;
+import com.jiawa.train.business.resp.TrainQueryResp;
 import com.jiawa.train.common.context.LoginMemberContext;
 import com.jiawa.train.common.resp.PageResp;
 import com.jiawa.train.business.resp.DailyTrainQueryResp;
@@ -18,13 +23,16 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
 @Service
 public class DailyTrainService {
     @Resource
-    DailyTrainMapper dailyTrainMapper;
+    private DailyTrainMapper dailyTrainMapper;
+    @Resource
+    private TrainService trainService;
 
     public Long save(DailyTrainSaveReq req) {
         DateTime now = DateTime.now();
@@ -72,4 +80,36 @@ public class DailyTrainService {
         return pageResp;
 
     }
+
+    public void genDaily(Date date) {
+        List<Train> trainList = trainService.selectAll();
+        if (CollUtil.isEmpty(trainList)) {
+            log.info("没有车次基础数据，任务结束");
+            return;
+        }
+
+        for (Train train : trainList) {
+            genDailyTrain(date, train);
+        }
+    }
+
+    public void genDailyTrain(Date date, Train train) {
+        DailyTrainExample dailyTrainExample = new DailyTrainExample();
+        dailyTrainExample.createCriteria()
+                .andDateEqualTo(date)
+                .andCodeEqualTo(train.getCode());
+
+        dailyTrainMapper.deleteByExample(dailyTrainExample);
+
+        // 生成该车次的数据
+        DateTime now = DateTime.now();
+        DailyTrain dailyTrain = BeanUtil.copyProperties(train, DailyTrain.class);
+        dailyTrain.setId(SnowUtil.getId());
+        dailyTrain.setCreateTime(now);
+        dailyTrain.setUpdateTime(now);
+        dailyTrain.setDate(date);
+
+        dailyTrainMapper.insert(dailyTrain);
+    }
+
 }

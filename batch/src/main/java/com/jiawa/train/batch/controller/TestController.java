@@ -1,5 +1,6 @@
 package com.jiawa.train.batch.controller;
 
+import cn.hutool.core.date.DateTime;
 import com.jiawa.train.batch.feign.BusinessFeign;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +16,7 @@ public class TestController {
 
     @GetMapping("/hello")
     public String hello() {
-        String hello = businessFeign.hello();
-        log.info("feigh res: {}", hello);
+        businessFeign.genDaily(DateTime.now().toJdkDate());
         return "Hello ! Batch";
     }
 }
