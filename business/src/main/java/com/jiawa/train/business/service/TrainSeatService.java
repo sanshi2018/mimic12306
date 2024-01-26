@@ -8,7 +8,6 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jiawa.train.business.entity.TrainCarriage;
 import com.jiawa.train.business.enums.SeatColEnum;
-import com.jiawa.train.common.context.LoginMemberContext;
 import com.jiawa.train.common.resp.PageResp;
 import com.jiawa.train.business.resp.TrainSeatQueryResp;
 import com.jiawa.train.common.util.SnowUtil;
@@ -118,5 +117,15 @@ public class TrainSeatService {
                 }
             }
         });
+    }
+
+    public List<TrainSeat> selectByTrainCode(String trainCode) {
+        TrainSeatExample trainSeatExample = new TrainSeatExample();
+        trainSeatExample.setOrderByClause("`id` asc");
+
+        trainSeatExample.createCriteria()
+                .andTrainCodeEqualTo(trainCode);
+
+        return trainSeatMapper.selectByExample(trainSeatExample);
     }
 }
