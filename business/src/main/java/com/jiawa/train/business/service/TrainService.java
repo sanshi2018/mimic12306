@@ -34,8 +34,8 @@ public class TrainService {
 
         // 保存之前，先校验唯一键是否存在
         Train trainDB = selectByUnique(req.getCode());
-        if (ObjectUtil.isNotEmpty(trainDB)) {
-            throw new BusinessException(EBusinessException.BUSINESS_TRAIN_CODE_UNIQUE_ERROR);
+        if (ObjectUtil.isEmpty(trainDB)) {
+            throw new BusinessException(EBusinessException.BUSINESS_TRAIN_CODE_NOT_EXIST_ERROR);
         }
         Train train = BeanUtil.copyProperties(req, Train.class);
         train.setUpdateTime(now);
@@ -49,6 +49,7 @@ public class TrainService {
 
         return train.getId();
     }
+
 
     public int delete(Long id) {
         return trainMapper.deleteByPrimaryKey(id);

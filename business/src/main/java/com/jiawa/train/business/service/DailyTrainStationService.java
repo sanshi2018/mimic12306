@@ -1,11 +1,14 @@
 package com.jiawa.train.business.service;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.jiawa.train.business.entity.TrainStation;
 import com.jiawa.train.common.context.LoginMemberContext;
 import com.jiawa.train.common.resp.PageResp;
 import com.jiawa.train.business.resp.DailyTrainStationQueryResp;
@@ -19,6 +22,7 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -26,6 +30,8 @@ import java.util.List;
 public class DailyTrainStationService {
     @Resource
     DailyTrainStationMapper dailyTrainStationMapper;
+    @Resource
+    TrainStationService trainStationService;
 
     public Long save(DailyTrainStationSaveReq req) {
         DateTime now = DateTime.now();
@@ -73,4 +79,38 @@ public class DailyTrainStationService {
         return pageResp;
 
     }
+
+    public void genDaily(Date date, String trainCode) {
+        log.info("生成日期【{}】车次【{}】的车站信息开始", DateUtil.formatDate(date), trainCode);
+        // 查出某车次的所有车站信息
+        List<TrainStation> trainStations = trainStationService.selectByTrainCode(trainCode);
+
+        if (CollUtil.isEmpty(trainStations)) {
+            log.info("该车次TrainCode:{} 没有车站基础数据，生成该车次信息结束", trainCode);
+            return;
+        }
+
+        // 删除某日的某车次信息
+        DailyTrainStationExample dailyTrainStationExample = new DailyTrainStationExample();
+        dailyTrainStationExample.createCriteria()
+                .andDateEqualTo(date)
+                .andTrainCodeEqualTo(trainCode);
+
+        dailyTrainStationMapper.deleteByExample(dailyTrainStationExample);
+
+        for (TrainStation trainStation : trainStations) {
+            DateTime now = DateTime.now();
+
+            DailyTrainStation dailyTrainStation = BeanUtil.copyProperties(trainStation, DailyTrainStation.class);
+            dailyTrainStation.setId(SnowUtil.getId());
+            dailyTrainStation.setCreateTime(now);
+            dailyTrainStation.setUpdateTime(now);
+            dailyTrainStation.setDate(date);
+
+            dailyTrainStationMapper.insert(dailyTrainStation);
+        }
+        log.info("生成日期【{}】车次【{}】的车站信息结束", DateUtil.formatDate(date), trainCode);
+
+    }
+
 }

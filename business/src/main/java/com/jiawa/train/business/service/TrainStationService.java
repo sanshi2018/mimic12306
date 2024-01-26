@@ -114,4 +114,12 @@ public class TrainStationService {
         }
     }
 
+    public List<TrainStation> selectByTrainCode(String trainCode) {
+        TrainStationExample trainStationExample = new TrainStationExample();
+        trainStationExample.createCriteria()
+                .andTrainCodeEqualTo(trainCode);
+
+        return trainStationMapper.selectByExample(trainStationExample);
+    }
+
 }
