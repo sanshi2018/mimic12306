@@ -114,8 +114,12 @@ public class TrainStationService {
         }
     }
 
+    /**
+     * 查询火车车站，按照站序升序
+     */
     public List<TrainStation> selectByTrainCode(String trainCode) {
         TrainStationExample trainStationExample = new TrainStationExample();
+        trainStationExample.setOrderByClause("index asc");
         trainStationExample.createCriteria()
                 .andTrainCodeEqualTo(trainCode);
 

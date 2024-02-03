@@ -21,6 +21,7 @@ import com.jiawa.train.business.req.DailyTrainStationSaveReq;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -80,6 +81,7 @@ public class DailyTrainStationService {
 
     }
 
+    @Transactional
     public void genDaily(Date date, String trainCode) {
         log.info("生成日期【{}】车次【{}】的车站信息开始", DateUtil.formatDate(date), trainCode);
         // 查出某车次的所有车站信息

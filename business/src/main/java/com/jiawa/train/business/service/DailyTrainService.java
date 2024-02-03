@@ -24,6 +24,7 @@ import com.jiawa.train.business.req.DailyTrainSaveReq;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -41,6 +42,8 @@ public class DailyTrainService {
     private DailyTrainCarriageService dailyTrainCarriageService;
     @Resource
     private DailyTrainSeatService dailyTrainSeatService;
+    @Resource
+    private DailyTrainTicketService dailyTrainTicketService;
 
     public Long save(DailyTrainSaveReq req) {
         DateTime now = DateTime.now();
@@ -101,6 +104,7 @@ public class DailyTrainService {
         }
     }
 
+    @Transactional
     public void genDailyTrain(Date date, Train train) {
         log.info("生成日期【{}】车次【{}】的信息开始", DateUtil.formatDate(date), train.getCode());
         DailyTrainExample dailyTrainExample = new DailyTrainExample();
@@ -125,8 +129,11 @@ public class DailyTrainService {
         // 生成车厢数据
         dailyTrainCarriageService.genDaily(date, train.getCode());
 
-        // 生成车厢数据
+        // 生成座位信息
         dailyTrainSeatService.genDaily(date, train.getCode());
+
+        // 生成车次的余票数据
+        dailyTrainTicketService.genDaily(date, train.getCode());
 
         log.info("生成日期【{}】车次【{}】的信息结束", DateUtil.formatDate(date), train.getCode());
     }
