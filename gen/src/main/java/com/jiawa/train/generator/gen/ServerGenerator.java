@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class ServerGenerator {
-    static boolean readOnly = false;
+    static boolean readOnly = true;
     static String vuePath = "web/tem/";
     static String module = "business";
     static String serverPath = "[module]/src/main/java/com/jiawa/train/"+module+"/";
