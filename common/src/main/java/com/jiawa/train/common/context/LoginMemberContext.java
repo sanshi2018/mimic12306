@@ -20,6 +20,10 @@ public class LoginMemberContext {
         LoginMemberContext.member.set(member);
     }
 
+    public static void clearMember() {
+        LoginMemberContext.member.remove();
+    }
+
     public static Long getId() {
         try {
             return member.get().getId();
