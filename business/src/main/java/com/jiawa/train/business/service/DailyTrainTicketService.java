@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.EnumUtil;
+import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.github.pagehelper.PageHelper;
@@ -144,6 +145,22 @@ public class DailyTrainTicketService {
         DailyTrainTicketExample example = new DailyTrainTicketExample();
         example.setOrderByClause("id desc");
         DailyTrainTicketExample.Criteria criteria = example.createCriteria();
+
+        if (ObjUtil.isNotNull(req.getDate())) {
+            criteria.andDateEqualTo(req.getDate());
+        }
+
+        if (ObjUtil.isNotNull(req.getTrainCode())) {
+            criteria.andTrainCodeEqualTo(req.getTrainCode());
+        }
+
+        if (ObjUtil.isNotNull(req.getStart())) {
+            criteria.andStartEqualTo(req.getStart());
+        }
+
+        if (ObjUtil.isNotNull(req.getEnd())) {
+            criteria.andEndEqualTo(req.getEnd());
+        }
 
         // 拦截最近的sql查询，进行分页
         PageHelper.startPage(req.getPage(), req.getSize());
