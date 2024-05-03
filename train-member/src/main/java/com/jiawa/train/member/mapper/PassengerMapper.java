@@ -1,8 +1,9 @@
 package com.jiawa.train.member.mapper;
 
+import java.util.List;
+
 import com.jiawa.train.member.domain.Passenger;
 import com.jiawa.train.member.domain.PassengerExample;
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 public interface PassengerMapper {

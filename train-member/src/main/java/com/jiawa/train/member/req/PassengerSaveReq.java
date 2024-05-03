@@ -1,10 +1,14 @@
 package com.jiawa.train.member.req;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.NotBlank;
-
 import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Getter;
+import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
+@Getter
+@Setter
 public class PassengerSaveReq {
 
     /**
@@ -15,6 +19,7 @@ public class PassengerSaveReq {
     /**
      * 会员id
      */
+    @NotNull(message = "【会员id】不能为空")
     private Long memberId;
 
     /**
@@ -24,9 +29,9 @@ public class PassengerSaveReq {
     private String name;
 
     /**
-     * 身份证
+     * 身份证号
      */
-    @NotBlank(message = "【身份证】不能为空")
+    @NotBlank(message = "【身份证号】不能为空")
     private String idCard;
 
     /**
@@ -36,72 +41,18 @@ public class PassengerSaveReq {
     private String type;
 
     /**
-     * 新增时间
+     * 创建时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @NotNull(message = "【创建时间】不能为空")
     private Date createTime;
 
     /**
-     * 修改时间
+     * 更新时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @NotNull(message = "【更新时间】不能为空")
     private Date updateTime;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getMemberId() {
-        return memberId;
-    }
-
-    public void setMemberId(Long memberId) {
-        this.memberId = memberId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getIdCard() {
-        return idCard;
-    }
-
-    public void setIdCard(String idCard) {
-        this.idCard = idCard;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
 
     @Override
     public String toString() {

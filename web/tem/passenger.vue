@@ -2,7 +2,7 @@
   <p>
     <a-space>
       <a-button type="primary" @click="handleQuery()">刷新</a-button>
-      <a-button type="primary" @click="onAdd">新增</a-button>
+      
     </a-space>
   </p>
   <a-table :dataSource="passengers"
@@ -12,46 +12,16 @@
            :loading="loading">
     <template #bodyCell="{ column, record }">
       <template v-if="column.dataIndex === 'operation'">
-        <a-space>
-          <a-popconfirm
-              title="删除后不可恢复，确认删除?"
-              @confirm="onDelete(record)"
-              ok-text="确认" cancel-text="取消">
-            <a style="color: red">删除</a>
-          </a-popconfirm>
-          <a @click="onEdit(record)">编辑</a>
-        </a-space>
       </template>
       <template v-else-if="column.dataIndex === 'type'">
         <span v-for="item in PASSENGER_TYPE_ARRAY" :key="item.key">
-          <span v-if="item.key === record.type">
-            {{item.value}}
+          <span v-if="item.code === record.type">
+            {{item.desc}}
           </span>
         </span>
       </template>
     </template>
   </a-table>
-  <a-modal v-model:visible="visible" title="乘车人" @ok="handleOk"
-           ok-text="确认" cancel-text="取消">
-    <a-form :model="passenger" :label-col="{span: 4}" :wrapper-col="{ span: 20 }">
-      <a-form-item label="会员id">
-        <a-input v-model:value="passenger.memberId" />
-      </a-form-item>
-      <a-form-item label="姓名">
-        <a-input v-model:value="passenger.name" />
-      </a-form-item>
-      <a-form-item label="身份证号">
-        <a-input v-model:value="passenger.idCard" />
-      </a-form-item>
-      <a-form-item label="旅客类型">
-        <a-select v-model:value="passenger.type">
-          <a-select-option v-for="item in PASSENGER_TYPE_ARRAY" :key="item.key" :value="item.key">
-            {{item.value}}
-          </a-select-option>
-        </a-select>
-      </a-form-item>
-    </a-form>
-  </a-modal>
 </template>
 
 <script>
@@ -102,52 +72,8 @@ export default defineComponent({
       dataIndex: 'type',
       key: 'type',
     },
-    {
-      title: '操作',
-      dataIndex: 'operation'
-    }
     ];
 
-    const onAdd = () => {
-      passenger.value = {};
-      visible.value = true;
-    };
-
-    const onEdit = (record) => {
-      passenger.value = window.Tool.copy(record);
-      visible.value = true;
-    };
-
-    const onDelete = (record) => {
-      axios.delete("/common/passenger/delete/" + record.id).then((response) => {
-        const data = response.data;
-        if (data.success) {
-          notification.success({description: "删除成功！"});
-          handleQuery({
-            page: pagination.value.current,
-            size: pagination.value.pageSize,
-          });
-        } else {
-          notification.error({description: data.message});
-        }
-      });
-    };
-
-    const handleOk = () => {
-      axios.post("/common/passenger/save", passenger.value).then((response) => {
-        let data = response.data;
-        if (data.success) {
-          notification.success({description: "保存成功！"});
-          visible.value = false;
-          handleQuery({
-            page: pagination.value.current,
-            size: pagination.value.pageSize
-          });
-        } else {
-          notification.error({description: data.message});
-        }
-      });
-    };
 
     const handleQuery = (param) => {
       if (!param) {
@@ -157,7 +83,7 @@ export default defineComponent({
         };
       }
       loading.value = true;
-      axios.get("/common/passenger/query-list", {
+      axios.get("/train-member/admin/passenger/query-list", {
         params: {
           page: param.page,
           size: param.size
@@ -176,11 +102,12 @@ export default defineComponent({
       });
     };
 
-    const handleTableChange = (pagination) => {
+    const handleTableChange = (page) => {
       // console.log("看看自带的分页参数都有啥：" + pagination);
+      pagination.value.pageSize = page.pageSize
       handleQuery({
-        page: pagination.current,
-        size: pagination.pageSize
+        page: page.current,
+        size: page.pageSize
       });
     };
 
@@ -201,10 +128,6 @@ export default defineComponent({
       handleTableChange,
       handleQuery,
       loading,
-      onAdd,
-      handleOk,
-      onEdit,
-      onDelete
     };
   },
 });
