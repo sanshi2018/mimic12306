@@ -11,3 +11,11 @@ spring:
       discovery:
         namespace: train # 命名空间
       server-addr: 192.168.50.193:8848 # nacos地址
+
+seata:
+  tx-service-group: train-group # seata事务组名
+  service:
+    vgroup-mapping:
+      train-group: default # 事务组映射
+    grouplist:
+        default: 127.0.0.1:8091
