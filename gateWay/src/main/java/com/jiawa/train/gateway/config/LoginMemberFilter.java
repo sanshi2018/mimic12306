@@ -23,6 +23,7 @@ public class LoginMemberFilter implements GlobalFilter, Ordered {
         // 检查http请求head中是否带有token
         String path = exchange.getRequest().getURI().getPath();
         if (path.contains("/admin")
+                || path.contains("/redis")
                 || path.contains("/business")
                 || path.contains("/hello")
                 || path.contains("/member/member/login")
