@@ -1,10 +1,7 @@
 package com.jiawa.train.common.resp;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-
-@Data
 public class CommonResp<T> {
+
     /**
      * 业务上的成功或失败
      */
@@ -27,10 +24,28 @@ public class CommonResp<T> {
         this.content = content;
     }
 
-    public CommonResp<T> success(T content) {
-        this.setSuccess(true);
-        this.setContent(content);
-        return this;
+    public boolean getSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public T getContent() {
+        return content;
+    }
+
+    public void setContent(T content) {
+        this.content = content;
     }
 
     @Override

@@ -8,111 +8,108 @@ import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.jiawa.train.business.entity.TrainStation;
-import com.jiawa.train.common.context.LoginMemberContext;
-import com.jiawa.train.common.resp.PageResp;
-import com.jiawa.train.business.resp.DailyTrainStationQueryResp;
-import com.jiawa.train.common.util.SnowUtil;
-import com.jiawa.train.business.entity.DailyTrainStation;
-import com.jiawa.train.business.entity.DailyTrainStationExample;
+import com.jiawa.train.business.domain.DailyTrainStation;
+import com.jiawa.train.business.domain.DailyTrainStationExample;
+import com.jiawa.train.business.domain.TrainStation;
 import com.jiawa.train.business.mapper.DailyTrainStationMapper;
 import com.jiawa.train.business.req.DailyTrainStationQueryReq;
 import com.jiawa.train.business.req.DailyTrainStationSaveReq;
+import com.jiawa.train.business.resp.DailyTrainStationQueryResp;
+import com.jiawa.train.common.resp.PageResp;
+import com.jiawa.train.common.util.SnowUtil;
 import jakarta.annotation.Resource;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
 
-@Slf4j
 @Service
 public class DailyTrainStationService {
-    @Resource
-    DailyTrainStationMapper dailyTrainStationMapper;
-    @Resource
-    TrainStationService trainStationService;
 
-    public Long save(DailyTrainStationSaveReq req) {
+    private static final Logger LOG = LoggerFactory.getLogger(DailyTrainStationService.class);
+
+    @Resource
+    private DailyTrainStationMapper dailyTrainStationMapper;
+
+    @Resource
+    private TrainStationService trainStationService;
+
+    public void save(DailyTrainStationSaveReq req) {
         DateTime now = DateTime.now();
-
         DailyTrainStation dailyTrainStation = BeanUtil.copyProperties(req, DailyTrainStation.class);
-        dailyTrainStation.setUpdateTime(now);
-        if(ObjectUtil.isNull(dailyTrainStation.getId())) {
-            dailyTrainStation.setId(SnowUtil.getId());
+        if (ObjectUtil.isNull(dailyTrainStation.getId())) {
+            dailyTrainStation.setId(SnowUtil.getSnowflakeNextId());
             dailyTrainStation.setCreateTime(now);
+            dailyTrainStation.setUpdateTime(now);
             dailyTrainStationMapper.insert(dailyTrainStation);
         } else {
+            dailyTrainStation.setUpdateTime(now);
             dailyTrainStationMapper.updateByPrimaryKey(dailyTrainStation);
         }
-
-        return dailyTrainStation.getId();
-    }
-
-    public int delete(Long id) {
-        return dailyTrainStationMapper.deleteByPrimaryKey(id);
     }
 
     public PageResp<DailyTrainStationQueryResp> queryList(DailyTrainStationQueryReq req) {
-        DailyTrainStationExample example = new DailyTrainStationExample();
-        example.setOrderByClause("date desc, train_code asc, `index` asc");
-        DailyTrainStationExample.Criteria criteria = example.createCriteria();
+        DailyTrainStationExample dailyTrainStationExample = new DailyTrainStationExample();
+        dailyTrainStationExample.setOrderByClause("date desc, train_code asc, `index` asc");
+        DailyTrainStationExample.Criteria criteria = dailyTrainStationExample.createCriteria();
         if (ObjUtil.isNotNull(req.getDate())) {
             criteria.andDateEqualTo(req.getDate());
         }
-
-        if (ObjectUtil.isNotNull(req.getTrainCode())) {
+        if (ObjUtil.isNotEmpty(req.getTrainCode())) {
             criteria.andTrainCodeEqualTo(req.getTrainCode());
         }
 
-        // 拦截最近的sql查询，进行分页
+        LOG.info("查询页码：{}", req.getPage());
+        LOG.info("每页条数：{}", req.getSize());
         PageHelper.startPage(req.getPage(), req.getSize());
-        List<DailyTrainStation> dailyTrainStations = dailyTrainStationMapper.selectByExample(example);
-        // 获取查询详情
-        PageInfo<DailyTrainStation> pageInfo = new PageInfo<>(dailyTrainStations);
+        List<DailyTrainStation> dailyTrainStationList = dailyTrainStationMapper.selectByExample(dailyTrainStationExample);
 
-        List<DailyTrainStationQueryResp> list = BeanUtil.copyToList(dailyTrainStations, DailyTrainStationQueryResp.class);
+        PageInfo<DailyTrainStation> pageInfo = new PageInfo<>(dailyTrainStationList);
+        LOG.info("总行数：{}", pageInfo.getTotal());
+        LOG.info("总页数：{}", pageInfo.getPages());
+
+        List<DailyTrainStationQueryResp> list = BeanUtil.copyToList(dailyTrainStationList, DailyTrainStationQueryResp.class);
 
         PageResp<DailyTrainStationQueryResp> pageResp = new PageResp<>();
         pageResp.setTotal(pageInfo.getTotal());
         pageResp.setList(list);
         return pageResp;
+    }
 
+    public void delete(Long id) {
+        dailyTrainStationMapper.deleteByPrimaryKey(id);
     }
 
     @Transactional
     public void genDaily(Date date, String trainCode) {
-        log.info("生成日期【{}】车次【{}】的车站信息开始", DateUtil.formatDate(date), trainCode);
-        // 查出某车次的所有车站信息
-        List<TrainStation> trainStations = trainStationService.selectByTrainCode(trainCode);
+        LOG.info("生成日期【{}】车次【{}】的车站信息开始", DateUtil.formatDate(date), trainCode);
 
-        if (CollUtil.isEmpty(trainStations)) {
-            log.info("该车次TrainCode:{} 没有车站基础数据，生成该车次信息结束", trainCode);
-            return;
-        }
-
-        // 删除某日的某车次信息
+        // 删除某日某车次的车站信息
         DailyTrainStationExample dailyTrainStationExample = new DailyTrainStationExample();
         dailyTrainStationExample.createCriteria()
                 .andDateEqualTo(date)
                 .andTrainCodeEqualTo(trainCode);
-
         dailyTrainStationMapper.deleteByExample(dailyTrainStationExample);
 
-        for (TrainStation trainStation : trainStations) {
-            DateTime now = DateTime.now();
+        // 查出某车次的所有的车站信息
+        List<TrainStation> stationList = trainStationService.selectByTrainCode(trainCode);
+        if (CollUtil.isEmpty(stationList)) {
+            LOG.info("该车次没有车站基础数据，生成该车次的车站信息结束");
+            return;
+        }
 
+        for (TrainStation trainStation : stationList) {
+            DateTime now = DateTime.now();
             DailyTrainStation dailyTrainStation = BeanUtil.copyProperties(trainStation, DailyTrainStation.class);
-            dailyTrainStation.setId(SnowUtil.getId());
+            dailyTrainStation.setId(SnowUtil.getSnowflakeNextId());
             dailyTrainStation.setCreateTime(now);
             dailyTrainStation.setUpdateTime(now);
             dailyTrainStation.setDate(date);
-
             dailyTrainStationMapper.insert(dailyTrainStation);
         }
-        log.info("生成日期【{}】车次【{}】的车站信息结束", DateUtil.formatDate(date), trainCode);
-
+        LOG.info("生成日期【{}】车次【{}】的车站信息结束", DateUtil.formatDate(date), trainCode);
     }
-
 }

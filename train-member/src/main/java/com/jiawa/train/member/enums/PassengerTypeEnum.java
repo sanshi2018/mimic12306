@@ -1,8 +1,5 @@
 package com.jiawa.train.member.enums;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -14,17 +11,29 @@ public enum PassengerTypeEnum {
     CHILD("2", "儿童"),
     STUDENT("3", "学生");
 
-    @Getter
-    @Setter
     private String code;
 
-    @Getter
-    @Setter
     private String desc;
 
     PassengerTypeEnum(String code, String desc) {
         this.code = code;
         this.desc = desc;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
+    public String getDesc() {
+        return desc;
     }
 
     public static List<HashMap<String,String>> getEnumList() {

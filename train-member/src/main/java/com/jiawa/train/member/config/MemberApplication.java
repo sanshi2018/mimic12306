@@ -1,21 +1,24 @@
 package com.jiawa.train.member.config;
 
-import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.core.env.Environment;
 
-@Slf4j
 @SpringBootApplication
-// 因为启动类在config包内，如果未做任何配置，则只能扫描到其所在的包内。
-// 所以需要添加componentScan扫描其他目录
 @ComponentScan("com.jiawa")
-@MapperScan("com.jiawa.train.member.mapper")
+@MapperScan("com.jiawa.train.*.mapper")
 public class MemberApplication {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MemberApplication.class);
+
     public static void main(String[] args) {
-        SpringApplication.run(MemberApplication.class, args);
-
+        SpringApplication app = new SpringApplication(MemberApplication.class);
+        Environment env = app.run(args).getEnvironment();
+        LOG.info("启动成功！！");
+        LOG.info("测试地址: \thttp://127.0.0.1:{}{}/hello", env.getProperty("server.port"), env.getProperty("server.servlet.context-path"));
     }
-
 }

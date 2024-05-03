@@ -2,14 +2,12 @@ package com.jiawa.train.common.util;
 
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateTime;
-import cn.hutool.json.JSONException;
 import cn.hutool.json.JSONObject;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTPayload;
 import cn.hutool.jwt.JWTUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +22,7 @@ public class JwtUtil {
 
     public static String createToken(Long id, String mobile) {
         DateTime now = DateTime.now();
-        DateTime expTime = now.offsetNew(DateField.HOUR, 15);
+        DateTime expTime = now.offsetNew(DateField.HOUR, 24);
         Map<String, Object> payload = new HashMap<>();
         // 签发时间
         payload.put(JWTPayload.ISSUED_AT, now);
@@ -40,10 +38,7 @@ public class JwtUtil {
         return token;
     }
 
-    public static boolean validate(String token) throws JSONException {
-        if (token == null || token.isBlank() || token.isEmpty()) {
-            return false;
-        }
+    public static boolean validate(String token) {
         JWT jwt = JWTUtil.parseToken(token).setKey(key.getBytes());
         // validate包含了verify
         boolean validate = jwt.validate(0);
@@ -64,7 +59,7 @@ public class JwtUtil {
     public static void main(String[] args) {
         createToken(1L, "123");
 
-        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE2OTk5NzU4NDAsIm1vYmlsZSI6IjEyMyIsImlkIjoxLCJleHAiOjE3MDAwMTE4NDAsImlhdCI6MTY5OTk3NTg0MH0.Ec6VDaUYzM_LxhPRR9rZkBEs1pWS5muHPy5OCy1viSk";
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE2NzY4OTk4MjcsIm1vYmlsZSI6IjEyMyIsImlkIjoxLCJleHAiOjE2NzY4OTk4MzcsImlhdCI6MTY3Njg5OTgyN30.JbFfdeNHhxKhAeag63kifw9pgYhnNXISJM5bL6hM8eU";
         validate(token);
 
         getJSONObject(token);

@@ -1,4 +1,5 @@
 package com.jiawa.train.business.enums;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.EnumSet;

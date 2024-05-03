@@ -1,11 +1,10 @@
 package com.jiawa.train.common.aspect;
-import cn.hutool.core.util.RandomUtil;
+
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.support.spring.PropertyPreFilters;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -15,19 +14,19 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
-@Slf4j
 @Aspect
 @Component
 public class LogAspect {
     public LogAspect() {
-        System.out.println("Common ------------ LogAspect");
+        System.out.println("Common LogAspect");
     }
+
+    private final static Logger LOG = LoggerFactory.getLogger(LogAspect.class);
 
     /**
      * 定义一个切点
@@ -39,8 +38,6 @@ public class LogAspect {
     @Before("controllerPointcut()")
     public void doBefore(JoinPoint joinPoint) {
 
-
-
         // 开始打印请求日志
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
@@ -48,10 +45,10 @@ public class LogAspect {
         String name = signature.getName();
 
         // 打印请求信息
-        log.info("------------- 开始 -------------");
-        log.info("请求地址: {} {}", request.getRequestURL().toString(), request.getMethod());
-        log.info("类名方法: {}.{}", signature.getDeclaringTypeName(), name);
-        log.info("远程地址: {}", request.getRemoteAddr());
+        LOG.info("------------- 开始 -------------");
+        LOG.info("请求地址: {} {}", request.getRequestURL().toString(), request.getMethod());
+        LOG.info("类名方法: {}.{}", signature.getDeclaringTypeName(), name);
+        LOG.info("远程地址: {}", request.getRemoteAddr());
 
         // 打印请求参数
         Object[] args = joinPoint.getArgs();
@@ -68,12 +65,11 @@ public class LogAspect {
             arguments[i] = args[i];
         }
         // 排除字段，敏感字段或太长的字段不显示：身份证、手机号、邮箱、密码等
-//        String[] excludeProperties = {"mobile"};
-//        PropertyPreFilters filters = new PropertyPreFilters();
-//        PropertyPreFilters.MySimplePropertyPreFilter excludefilter = filters.addFilter();
-//        excludefilter.addExcludes(excludeProperties);
-//        LOG.info("请求参数: {}", JSONObject.toJSONString(arguments, excludefilter));
-        log.info("请求参数: {}", JSONObject.toJSONString(arguments));
+        String[] excludeProperties = {};
+        PropertyPreFilters filters = new PropertyPreFilters();
+        PropertyPreFilters.MySimplePropertyPreFilter excludefilter = filters.addFilter();
+        excludefilter.addExcludes(excludeProperties);
+        LOG.info("请求参数: {}", JSONObject.toJSONString(arguments, excludefilter));
     }
 
     @Around("controllerPointcut()")
@@ -81,13 +77,12 @@ public class LogAspect {
         long startTime = System.currentTimeMillis();
         Object result = proceedingJoinPoint.proceed();
         // 排除字段，敏感字段或太长的字段不显示：身份证、手机号、邮箱、密码等
-//        String[] excludeProperties = {"mobile"};
-//        PropertyPreFilters filters = new PropertyPreFilters();
-//        PropertyPreFilters.MySimplePropertyPreFilter excludefilter = filters.addFilter();
-//        excludefilter.addExcludes(excludeProperties);
-//        LOG.info("返回结果: {}", JSONObject.toJSONString(result, excludefilter));
-        log.info("返回结果: {}", JSONObject.toJSONString(result));
-        log.info("------------- 结束 耗时：{} ms -------------", System.currentTimeMillis() - startTime);
+        String[] excludeProperties = {};
+        PropertyPreFilters filters = new PropertyPreFilters();
+        PropertyPreFilters.MySimplePropertyPreFilter excludefilter = filters.addFilter();
+        excludefilter.addExcludes(excludeProperties);
+        LOG.info("返回结果: {}", JSONObject.toJSONString(result, excludefilter));
+        LOG.info("------------- 结束 耗时：{} ms -------------", System.currentTimeMillis() - startTime);
         return result;
     }
 

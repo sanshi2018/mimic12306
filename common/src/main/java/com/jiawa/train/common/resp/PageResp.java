@@ -1,13 +1,8 @@
 package com.jiawa.train.common.resp;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.io.Serializable;
 import java.util.List;
 
-@Setter
-@Getter
 public class PageResp<T> implements Serializable {
 
     /**
@@ -20,6 +15,21 @@ public class PageResp<T> implements Serializable {
      */
     private List<T> list;
 
+    public Long getTotal() {
+        return total;
+    }
+
+    public void setTotal(Long total) {
+        this.total = total;
+    }
+
+    public List<T> getList() {
+        return list;
+    }
+
+    public void setList(List<T> list) {
+        this.list = list;
+    }
 
     @Override
     public String toString() {

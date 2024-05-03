@@ -4,12 +4,18 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-//@DisallowConcurrentExecution // 禁止任务并发执行
 
+@DisallowConcurrentExecution
 public class TestJob implements Job {
+
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        System.out.println("定时renew1111111");
-
+        System.out.println("TestJob TEST开始");
+        // try {
+        //     Thread.sleep(3000);
+        // } catch (InterruptedException e) {
+        //     e.printStackTrace();
+        // }
+        System.out.println("TestJob TEST结束");
     }
 }

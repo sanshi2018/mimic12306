@@ -1,7 +1,7 @@
 package com.jiawa.train.business.mapper;
 
-import com.jiawa.train.business.entity.Train;
-import com.jiawa.train.business.entity.TrainExample;
+import com.jiawa.train.business.domain.Train;
+import com.jiawa.train.business.domain.TrainExample;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 

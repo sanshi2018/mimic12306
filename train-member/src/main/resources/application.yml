@@ -17,3 +17,6 @@ mybatis:
 logging:
   level:
     com.jiawa.train.member.mapper: trace
+
+test:
+  nacos: Member

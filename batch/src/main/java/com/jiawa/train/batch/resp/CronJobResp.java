@@ -2,11 +2,9 @@ package com.jiawa.train.batch.resp;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
 
 import java.util.Date;
 
-@Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class CronJobResp {
     private String group;
@@ -37,5 +35,61 @@ public class CronJobResp {
         sb.append(", preFireTime=").append(preFireTime);
         sb.append('}');
         return sb.toString();
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
+    }
+
+    public String getCronExpression() {
+        return cronExpression;
+    }
+
+    public void setCronExpression(String cronExpression) {
+        this.cronExpression = cronExpression;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Date getNextFireTime() {
+        return nextFireTime;
+    }
+
+    public void setNextFireTime(Date nextFireTime) {
+        this.nextFireTime = nextFireTime;
+    }
+
+    public Date getPreFireTime() {
+        return preFireTime;
+    }
+
+    public void setPreFireTime(Date preFireTime) {
+        this.preFireTime = preFireTime;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 }

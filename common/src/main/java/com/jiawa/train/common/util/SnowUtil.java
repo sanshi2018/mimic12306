@@ -2,16 +2,19 @@ package com.jiawa.train.common.util;
 
 import cn.hutool.core.util.IdUtil;
 
+/**
+ * 封装hutool雪花算法
+ */
 public class SnowUtil {
-    private static long dataCenterID = 1L; // 数据中心
 
-    private static long workerId = 1L; // 机器标识
+    private static long dataCenterId = 1;  //数据中心
+    private static long workerId = 1;     //机器标识
 
-    public static long getId() {
-        return IdUtil.getSnowflake(dataCenterID, workerId).nextId();
+    public static long getSnowflakeNextId() {
+        return IdUtil.getSnowflake(workerId, dataCenterId).nextId();
     }
 
     public static String getSnowflakeNextIdStr() {
-        return String.valueOf(IdUtil.getSnowflake(dataCenterID, workerId).nextId());
+        return IdUtil.getSnowflake(workerId, dataCenterId).nextIdStr();
     }
 }
