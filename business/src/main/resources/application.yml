@@ -41,7 +41,7 @@ spring:
     redis:
       key-prefix: train_cache_
       time-to-live: 60s
-      cache-null-values: false
+      cache-null-values: true
       use-key-prefix: true
 
 mybatis:
