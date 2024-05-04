@@ -109,7 +109,7 @@ public class ConfirmOrderService {
 
         String lockKey = DateUtil.formatDate(req.getDate()) + "-" + req.getTrainCode();
         // Boolean setIfAbsent = redisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 60, TimeUnit.SECONDS);
-        // if (Boolean.TRUE.equals(setIfAbsent)) {
+        // if (Boolean.TRUE.equals(setIfAbsent)) { setnx
         //     LOG.info("恭喜，抢到锁了！lockKey：{}", lockKey);
         // } else {
         //     // 只是没抢到锁，并不知道票抢完了没，所以提示稍候再试
@@ -118,10 +118,20 @@ public class ConfirmOrderService {
         // }
 
         RLock lock = null;
-
+    /*
+            关于红锁，看16.7节：
+            A B C D E
+            1: A B C D E
+            2: C D E
+            3: C
+        */
         try {
             // 使用redisson，自带看门狗
             lock = redissonClient.getLock(lockKey);
+            // 红锁的写法
+            // RedissonRedLock redissonRedLock = new RedissonRedLock(lock, lock, lock);
+            // boolean tryLock1 = redissonRedLock.tryLock(0, TimeUnit.SECONDS);
+
             /**
              waitTime – the maximum time to acquire the lock 等待获取锁时间(最大尝试获得锁的时间)，超时返回false
              leaseTime – lease time 锁时长，即n秒后自动释放锁
