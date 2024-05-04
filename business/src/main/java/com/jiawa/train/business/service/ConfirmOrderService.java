@@ -137,16 +137,16 @@ public class ConfirmOrderService {
              leaseTime – lease time 锁时长，即n秒后自动释放锁
              time unit – time unit 时间单位
              */
-            // boolean tryLock = lock.tryLock(30, 10, TimeUnit.SECONDS); // 不带看门狗
-            boolean tryLock = lock.tryLock(0, TimeUnit.SECONDS); // 带看门狗
+//             boolean tryLock = lock.tryLock(30, 10, TimeUnit.SECONDS);
+            boolean tryLock = lock.tryLock(0, TimeUnit.SECONDS);
             if (tryLock) {
                 LOG.info("恭喜，抢到锁了！");
                 // 可以把下面这段放开，只用一个线程来测试，看看redisson的看门狗效果
-                // for (int i = 0; i < 30; i++) {
-                //     Long expire = redisTemplate.opsForValue().getOperations().getExpire(lockKey);
-                //     LOG.info("锁过期时间还有：{}", expire);
-                //     Thread.sleep(1000);
-                // }
+                 for (int i = 0; i < 30; i++) {
+                     Long expire = stringRedisTemplate.opsForValue().getOperations().getExpire(lockKey);
+                     LOG.info("锁过期时间还有：{}", expire);
+                     Thread.sleep(1000);
+                 }
             } else {
                 // 只是没抢到锁，并不知道票抢完了没，所以提示稍候再试
                 LOG.info("很遗憾，没抢到锁");

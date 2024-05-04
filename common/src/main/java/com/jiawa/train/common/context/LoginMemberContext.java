@@ -22,8 +22,16 @@ public class LoginMemberContext {
             return member.get().getId();
         } catch (Exception e) {
             LOG.error("获取登录会员信息异常", e);
+
+
             throw e;
+
         }
+    }
+
+    public static void remove() {
+        // 清空member
+        member.remove();
     }
 
 }
