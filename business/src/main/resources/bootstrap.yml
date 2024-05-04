@@ -18,4 +18,4 @@ seata:
     vgroup-mapping:
       train-group: default # 事务组映射
     grouplist:
-      default: 127.0.0.1:8091
+      default: 192.168.50.193:8091 #seata集群对应的机器
