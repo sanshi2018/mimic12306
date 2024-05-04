@@ -3,6 +3,7 @@ package com.jiawa.train.business.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.EnumUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -100,13 +101,13 @@ public class ConfirmOrderService {
 
     public synchronized void doConfirm(ConfirmOrderDoReq req) {
 
-        String key = req.getDate() + "-" + req.getTrainCode();
-        Boolean setIfAbsent = stringRedisTemplate.opsForValue().setIfAbsent(key, key, 5, TimeUnit.SECONDS);
-        if (setIfAbsent) {
-            LOG.info("恭喜，抢到锁了！");
+        String lockKey = DateUtil.formatDate(req.getDate()) + "-" + req.getTrainCode();
+        Boolean setIfAbsent = stringRedisTemplate.opsForValue().setIfAbsent(lockKey, lockKey, 5, TimeUnit.SECONDS);
+        if (Boolean.TRUE.equals(setIfAbsent)) {
+            LOG.info("恭喜，抢到锁了！lockKey：{}", lockKey);
         } else {
             // 只是没抢到锁，并不知道票抢完了没，所以提示稍候再试
-            LOG.info("很遗憾，没抢到锁");
+            LOG.info("很遗憾，没抢到锁！lockKey：{}", lockKey);
             throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_LOCK_FAIL);
         }
 
