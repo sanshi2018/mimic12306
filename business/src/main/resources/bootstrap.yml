@@ -13,9 +13,31 @@ spring:
       server-addr: 192.168.50.193:8848 # nacos地址
 
 seata:
+  registry:
+    type: nacos
+    nacos:
+      application: seata-server
+      server-addr: 192.168.50.193:8848
+      group: SEATA_GROUP
+      namespace: train
+      username: nacos
+      password: nacos
+  config:
+    type: nacos
+    nacos:
+      server-addr: 192.168.50.193:8848
+      group: SEATA_GROUP
+      namespace: train
+      data-id: seataServer.yml
+      username: nacos
+      password: nacos
+
   tx-service-group: train-group # seata事务组名
-  service:
-    vgroup-mapping:
-      train-group: default # 事务组映射
-    grouplist:
-      default: 192.168.50.193:8091 #seata集群对应的机器
+
+
+
+#  service:
+#    vgroup-mapping:
+#      train-group: default # 事务组映射
+#    grouplist:
+#      default: 192.168.50.193:8091 #seata集群对应的机器
