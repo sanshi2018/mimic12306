@@ -14,15 +14,15 @@ spring:
     sentinel:
       transport:
         port: 8719
-        dashboard: localhost:18080
-      datasource:
-        nacos:
-          nacos:
-            server-addr: localhost:8848
-            namespace: train
-            group-id: TRAIN_GROUP
-            data-id: sentinel
-            rule-type: flow
+        dashboard: 192.168.50.193:18080
+#      datasource:
+#        nacos:
+#          nacos:
+#            server-addr: localhost:8848
+#            namespace: train
+#            group-id: TRAIN_GROUP
+#            data-id: sentinel
+#            rule-type: flow
 
 
 seata:

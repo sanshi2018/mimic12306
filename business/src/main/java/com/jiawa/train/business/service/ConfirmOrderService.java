@@ -145,11 +145,11 @@ public class ConfirmOrderService {
             if (tryLock) {
                 LOG.info("恭喜，抢到锁了！");
                 // 可以把下面这段放开，只用一个线程来测试，看看redisson的看门狗效果
-                 for (int i = 0; i < 30; i++) {
-                     Long expire = stringRedisTemplate.opsForValue().getOperations().getExpire(lockKey);
-                     LOG.info("锁过期时间还有：{}", expire);
-                     Thread.sleep(1000);
-                 }
+//                 for (int i = 0; i < 30; i++) {
+//                     Long expire = stringRedisTemplate.opsForValue().getOperations().getExpire(lockKey);
+//                     LOG.info("锁过期时间还有：{}", expire);
+//                     Thread.sleep(1000);
+//                 }
             } else {
                 // 只是没抢到锁，并不知道票抢完了没，所以提示稍候再试
                 LOG.info("很遗憾，没抢到锁");
