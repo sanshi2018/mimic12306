@@ -11,6 +11,19 @@ spring:
       discovery:
         namespace: train # 命名空间
       server-addr: 192.168.50.193:8848 # nacos地址
+    sentinel:
+      transport:
+        port: 8719
+        dashboard: localhost:18080
+      datasource:
+        nacos:
+          nacos:
+            server-addr: localhost:8848
+            namespace: train
+            group-id: TRAIN_GROUP
+            data-id: sentinel
+            rule-type: flow
+
 
 seata:
   registry:
