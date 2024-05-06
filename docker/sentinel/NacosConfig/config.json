@@ -14,12 +14,12 @@
     "controlBehavior": 0,
     // 流控模式(0:直接；1:关联;2:链路)
     "strategy": 0
-    // // 预热时间（秒，预热模式需要此参数）
-    // "warmUpPeriodSec": 10,
-    // // 超时时间（排队等待模式需要此参数）
-    // "maxQueueingTimeMs": 500,
-    // // 关联资源、入口资源(关联、链路模式)
-    // "refResource": "rrr"
+     // 预热时间（秒，预热模式需要此参数）
+     "warmUpPeriodSec": 10,
+     // 超时时间（排队等待模式需要此参数）
+     "maxQueueingTimeMs": 500,
+     // 关联资源、入口资源(关联、链路模式)
+     "refResource": "rrr"
   },{
   // 资源名
   "resource": "confirmOrderDo",
