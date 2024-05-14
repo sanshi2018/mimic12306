@@ -19,14 +19,14 @@ import java.util.Map;
 import java.util.Set;
 
 public class ServerGenerator {
-    static boolean readOnly = true;
+    static boolean readOnly = false;
     static String vuePath = "web/tem/";
-    static String module = "member";
+    static String module = "business";
     static String serverPath = "[module]/src/main/java/com/jiawa/train/"+module+"/";
     static String pomPath ="gen/pom.xml";
-    static {
-        new File(serverPath).mkdirs();
-    }
+//    static {
+//        new File(serverPath).mkdirs();
+//    }
 
     public static void main(String[] args) throws Exception {
         // 输出程序运行的当前目录
@@ -43,6 +43,7 @@ public class ServerGenerator {
         System.out.println("module: " + module);
         // 得到真实输出目录
         serverPath = serverPath.replace("[module]", module);
+        new File(serverPath).mkdirs();
         // new File(servicePath).mkdirs();
         System.out.println("servicePath: " + serverPath);
 
@@ -100,10 +101,11 @@ public class ServerGenerator {
 
         System.out.println("组装参数：" + param);
 
-//        gen(Domain, param, "controller/admin", "adminController");
-//        gen(Domain, param, "service", "service");
+
+        gen(Domain, param, "service", "service");
+        gen(Domain, param, "controller/admin", "adminController");
         gen(Domain, param, "req", "saveReq");
-//        gen(Domain, param, "req", "queryReq");
+        gen(Domain, param, "req", "queryReq");
         gen(Domain, param, "resp", "queryResp");
 
         genVue(do_main, param);
