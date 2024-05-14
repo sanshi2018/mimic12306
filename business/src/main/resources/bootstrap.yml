@@ -23,6 +23,7 @@ spring:
             group-id: DEFAULT_GROUP
             data-id: sentinel-business-flow
             rule-type: flow
+      web-context-unify: false # 流控模式是链路时，必须关闭这个配置，默认为true，为true是可以在簇点链路看到层级关系
 
 
 seata:
