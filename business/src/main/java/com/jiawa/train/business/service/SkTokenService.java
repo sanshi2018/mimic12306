@@ -7,6 +7,8 @@ import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jiawa.train.business.mapper.cust.SkTokenMapperCust;
+import com.jiawa.train.common.exception.BusinessException;
+import com.jiawa.train.common.exception.BusinessExceptionEnum;
 import com.jiawa.train.common.resp.PageResp;
 import com.jiawa.train.business.resp.SkTokenQueryResp;
 import com.jiawa.train.common.util.SnowUtil;
@@ -17,10 +19,14 @@ import com.jiawa.train.business.req.SkTokenQueryReq;
 import com.jiawa.train.business.req.SkTokenSaveReq;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -36,6 +42,10 @@ public class SkTokenService {
 
     @Resource
     private SkTokenMapperCust skTokenMapperCust;
+
+    @Autowired
+    private RedissonClient redissonClient;
+
     /**
      * 初始化
      */
@@ -60,7 +70,7 @@ public class SkTokenService {
         log.info("车次【{}】到站数：{}", trainCode, stationCount);
 
         // 3/4需要根据实际卖票比例来定，一趟火车最多可以卖（seatCount * stationCount）张火车票
-        int count = (int) (seatCount * stationCount * 3/4);
+        int count = (int) (seatCount * stationCount * 3 / 4);
         log.info("车次【{}】初始生成令牌数：{}", trainCode, count);
         skToken.setCount(count);
 
@@ -72,7 +82,7 @@ public class SkTokenService {
 
         SkToken skToken = BeanUtil.copyProperties(req, SkToken.class);
         skToken.setUpdateTime(now);
-        if(ObjectUtil.isNull(skToken.getId())) {
+        if (ObjectUtil.isNull(skToken.getId())) {
             skToken.setId(SnowUtil.getSnowflakeNextId());
             skToken.setCreateTime(now);
             skTokenMapper.insert(skToken);
@@ -113,12 +123,40 @@ public class SkTokenService {
      */
     public boolean validSkToken(Date date, String trainCode, Long memberId) {
         log.info("会员【{}】获取日期【{}】车次【{}】的令牌开始", memberId, DateUtil.formatDate(date), trainCode);
-        // 令牌约等于库存，令牌没有了，就不再卖票，不需要再进入购票主流程去判断库存，判断令牌肯定比判断库存效率高
-        int updateCount = skTokenMapperCust.decrease(date, trainCode);
-        if (updateCount > 0) {
-            return true;
-        } else {
-            return false;
+
+        // 先获取令牌锁，再校验令牌余量，防止机器人抢票，lockKey就是令牌，用来表示【谁能做什么】的一个凭证
+        String lockKey = DateUtil.formatDate(date) + "-" + trainCode + "-" + memberId;
+        RLock lock = null;
+
+        try {
+            // 使用redisson，自带看门狗
+            lock = redissonClient.getLock(lockKey);
+            boolean tryLock = lock.tryLock(0, TimeUnit.SECONDS);
+            if (tryLock) {
+                log.info("恭喜，抢到锁了！");
+                log.info("会员【{}】获取日期【{}】车次【{}】的令牌开始", memberId, DateUtil.formatDate(date), trainCode);
+                // 令牌约等于库存，令牌没有了，就不再卖票，不需要再进入购票主流程去判断库存，判断令牌肯定比判断库存效率高
+                int updateCount = skTokenMapperCust.decrease(date, trainCode);
+                if (updateCount > 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                // 只是没抢到锁，并不知道票抢完了没，所以提示稍候再试
+                log.info("很遗憾，没抢到锁");
+                throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_LOCK_FAIL);
+            }
+
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            log.info("购票流程结束，释放锁！");
+            if (null != lock && lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
         }
+
+
     }
 }
