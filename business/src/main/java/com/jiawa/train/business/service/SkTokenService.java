@@ -148,13 +148,15 @@ public class SkTokenService {
                     log.info("缓存中有该车次令牌大闸的key：{}", skTokenCountKey);
                     Long count = skTokenCount.getAndSet(skTokenCount.get() - 1);
 
-                    // 设置对象60s过期
-                    skTokenCount.expire(Duration.ofSeconds(60));
+
                     if (count < 0L) {
                         log.error("获取令牌失败：{}", skTokenCountKey);
-                        throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_SK_TOKEN_FAIL);
+                        return false;
+//                        throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_SK_TOKEN_FAIL);
                     } else {
                         log.info("获取令牌后，令牌余数：{}", count);
+                        // 设置对象60s过期
+                        skTokenCount.expire(Duration.ofSeconds(60));
                         // 每取5个令牌更新一次数据库
                         if (count % 5 == 0) {
                             skTokenMapperCust.decrease(date, trainCode, 5);
@@ -183,8 +185,9 @@ public class SkTokenService {
                     int count = skToken.getCount() - 1;
                     skToken.setCount(count);
                     log.info("将该车次令牌大闸放入缓存中，key: {}， count: {}", skTokenCountKey, count);
+                    // 不需要更新数据库，只要放缓存即可
                     skTokenCount.setAsync((long) count, 60, TimeUnit.SECONDS);
-                    skTokenMapper.updateByPrimaryKey(skToken);
+//                    skTokenMapper.updateByPrimaryKey(skToken);
                     return true;
                 }
 
