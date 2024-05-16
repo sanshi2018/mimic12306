@@ -1,12 +1,13 @@
 package com.jiawa.train.business.service;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.jiawa.train.business.enums.LockKeyPreEnum;
+import com.jiawa.train.business.enums.RedisKeyPreEnum;
 import com.jiawa.train.business.mapper.cust.SkTokenMapperCust;
 import com.jiawa.train.common.exception.BusinessException;
 import com.jiawa.train.common.exception.BusinessExceptionEnum;
@@ -20,11 +21,14 @@ import com.jiawa.train.business.req.SkTokenQueryReq;
 import com.jiawa.train.business.req.SkTokenSaveReq;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RBucket;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -126,7 +130,7 @@ public class SkTokenService {
         log.info("会员【{}】获取日期【{}】车次【{}】的令牌开始", memberId, DateUtil.formatDate(date), trainCode);
 
         // 先获取令牌锁，再校验令牌余量，防止机器人抢票，lockKey就是令牌，用来表示【谁能做什么】的一个凭证
-        String lockKey = LockKeyPreEnum.SK_TOKEN + "-" + DateUtil.formatDate(date) + "-" + trainCode + "-" + memberId;
+        String lockKey = RedisKeyPreEnum.SK_TOKEN + "-" + DateUtil.formatDate(date) + "-" + trainCode + "-" + memberId;
         RLock lock = null;
         try {
             // 使用redisson，自带看门狗
@@ -136,17 +140,52 @@ public class SkTokenService {
             if (tryLock) {
                 log.info("恭喜，抢到锁了！");
                 log.info("会员【{}】获取日期【{}】车次【{}】的令牌开始", memberId, DateUtil.formatDate(date), trainCode);
-                // 令牌约等于库存，令牌没有了，就不再卖票，不需要再进入购票主流程去判断库存，判断令牌肯定比判断库存效率高
-                int updateCount = skTokenMapperCust.decrease(date, trainCode);
 
-                // 等待5s
-                Thread.sleep(30000);
+                String skTokenCountKey = RedisKeyPreEnum.SK_TOKEN_COUNT + "-" + DateUtil.formatDate(date) + "-" + trainCode;
+                // 获取skTokenCountKey的值 从redis中
+                RBucket<Long> skTokenCount = redissonClient.getBucket(skTokenCountKey);
+                if (skTokenCount.isExists()) {
+                    log.info("缓存中有该车次令牌大闸的key：{}", skTokenCountKey);
+                    Long count = skTokenCount.getAndSet(skTokenCount.get() - 1);
 
-                log.info("睡眠结束！！");
-                if (updateCount > 0) {
-                    return true;
+                    // 设置对象60s过期
+                    skTokenCount.expire(Duration.ofSeconds(60));
+                    if (count < 0L) {
+                        log.error("获取令牌失败：{}", skTokenCountKey);
+                        throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_SK_TOKEN_FAIL);
+                    } else {
+                        log.info("获取令牌后，令牌余数：{}", count);
+                        // 每取5个令牌更新一次数据库
+                        if (count % 5 == 0) {
+                            skTokenMapperCust.decrease(date, trainCode, 5);
+                        }
+                        return true;
+                    }
                 } else {
-                    return false;
+                    log.info("缓存中没有该车次令牌大闸的key：{}", skTokenCountKey);
+                    // 检查是否还有令牌
+                    SkTokenExample skTokenExample = new SkTokenExample();
+                    skTokenExample.createCriteria().andDateEqualTo(date).andTrainCodeEqualTo(trainCode);
+                    List<SkToken> skTokens = skTokenMapper.selectByExample(skTokenExample);
+                    if (CollUtil.isEmpty(skTokens)) {
+                        log.info("找不到日期【{}】车次【{}】的令牌记录", DateUtil.formatDate(date), trainCode);
+                        return false;
+                    }
+
+                    SkToken skToken = skTokens.get(0);
+                    if (skToken.getCount() <= 0) {
+                        log.info("日期【{}】车次【{}】的令牌余量为0", DateUtil.formatDate(date), trainCode);
+                        return false;
+                    }
+
+                    // 令牌还有余量
+                    // 令牌-1
+                    int count = skToken.getCount() - 1;
+                    skToken.setCount(count);
+                    log.info("将该车次令牌大闸放入缓存中，key: {}， count: {}", skTokenCountKey, count);
+                    skTokenCount.setAsync((long) count, 60, TimeUnit.SECONDS);
+                    skTokenMapper.updateByPrimaryKey(skToken);
+                    return true;
                 }
 
             } else {
