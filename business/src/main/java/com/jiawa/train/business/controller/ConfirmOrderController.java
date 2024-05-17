@@ -37,7 +37,7 @@ public class ConfirmOrderController {
         String imageCode = req.getImageCode();
         RBucket<String> imgCodeBucket = redissonClient.getBucket(imageCodeToken);
 //        String imageCodeRedis = redisTemplate.opsForValue().get(imageCodeToken);
-        if (imgCodeBucket.isExists()) {
+        if (!imgCodeBucket.isExists()) {
             return new CommonResp<>(false, "验证码已过期", null);
         }
         String redisImageCode = imgCodeBucket.get();
