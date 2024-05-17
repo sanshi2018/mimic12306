@@ -4,6 +4,8 @@ import com.google.code.kaptcha.impl.DefaultKaptcha;
 import jakarta.annotation.Resource;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
+import org.redisson.api.RBucket;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -25,6 +27,7 @@ public class KaptchaController {
     DefaultKaptcha defaultKaptcha;
 
     @Resource
+    public RedissonClient redissonClient;
     public StringRedisTemplate stringRedisTemplate;
 
     @GetMapping("/image-code/{imageCodeToken}")
@@ -35,7 +38,9 @@ public class KaptchaController {
             String createText = defaultKaptcha.createText();
 
             // 将生成的验证码放入redis缓存中，后续验证的时候用到
-            stringRedisTemplate.opsForValue().set(imageCodeToken, createText, 300, TimeUnit.SECONDS);
+            RBucket<String> imgBucket = redissonClient.getBucket(imageCodeToken);
+            imgBucket.setAsync(createText, 300, TimeUnit.SECONDS);
+//            stringRedisTemplate.opsForValue().set(imageCodeToken, createText, 300, TimeUnit.SECONDS);
 
             // 使用验证码字符串生成验证码图片
             BufferedImage challenge = defaultKaptcha.createImage(createText);
