@@ -131,8 +131,10 @@ public class ConfirmOrderService {
 
             } else {
                 // 只是没抢到锁，并不知道票抢完了没，所以提示稍候再试
-                LOG.info("很遗憾，没抢到锁");
-                throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_LOCK_FAIL);
+//                LOG.info("很遗憾，没抢到锁");
+//                throw new BusinessException(BusinessExceptionEnum.CONFIRM_ORDER_LOCK_FAIL);
+                LOG.info("没抢到锁，有其它消费线程正在出票，不做任何处理");
+                return;
             }
 
             while (true) {
