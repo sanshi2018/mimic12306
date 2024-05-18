@@ -48,8 +48,10 @@ seata:
 
   tx-service-group: train-group # seata事务组名
 
-
-
+rocketmq:
+  name-server: http://192.168.50.193:9876
+  producer:
+    group: default
 #  service:
 #    vgroup-mapping:
 #      train-group: default # 事务组映射
