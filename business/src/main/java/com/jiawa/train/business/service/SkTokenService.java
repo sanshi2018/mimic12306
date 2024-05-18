@@ -25,6 +25,7 @@ import org.redisson.api.RBucket;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -51,6 +52,8 @@ public class SkTokenService {
     @Autowired
     private RedissonClient redissonClient;
 
+    @Value("${spring.profiles.active}")
+    private String env;
     /**
      * 初始化
      */
@@ -128,6 +131,10 @@ public class SkTokenService {
      */
     public boolean validSkToken(Date date, String trainCode, Long memberId) {
         log.info("会员【{}】获取日期【{}】车次【{}】的令牌开始", memberId, DateUtil.formatDate(date), trainCode);
+
+        if (!env.equals("dev")) {
+
+        }
 
         // 先获取令牌锁，再校验令牌余量，防止机器人抢票，lockKey就是令牌，用来表示【谁能做什么】的一个凭证
         String lockKey = RedisKeyPreEnum.SK_TOKEN + "-" + DateUtil.formatDate(date) + "-" + trainCode + "-" + memberId;

@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,27 +33,32 @@ public class ConfirmOrderController {
     @Resource
     private BeforeConfirmOrderService beforeConfirmOrderService;
 
+    @Value("${spring.profiles.active}")
+    private String env;
+
     // 接口的资源名称不要和接口路径一致，会导致限流后走不到降级方法中
     @SentinelResource(value = "confirmOrderDo", blockHandler = "doConfirmBlock")
     @PostMapping("/do")
     public CommonResp<Object> doConfirm(@Valid @RequestBody ConfirmOrderDoReq req) {
-        // 图形验证码校验
-        String imageCodeToken = req.getImageCodeToken();
-        String imageCode = req.getImageCode();
-        RBucket<String> imgCodeBucket = redissonClient.getBucket(imageCodeToken);
-//        String imageCodeRedis = redisTemplate.opsForValue().get(imageCodeToken);
-        if (!imgCodeBucket.isExists()) {
-            return new CommonResp<>(false, "验证码已过期", null);
-        }
-        String redisImageCode = imgCodeBucket.get();
-        log.info("从redis中获取到的验证码：{}", imageCode);
-        // 验证码校验，大小写忽略，提升体验，比如Oo Vv Ww容易混
-        if (!redisImageCode.equalsIgnoreCase(imageCode)) {
-            return new CommonResp<>(false, "验证码不正确", null);
-        } else {
-            // 验证通过后，移除验证码
-            imgCodeBucket.deleteAsync();
+        if (!env.equals("dev")) {
+            // 图形验证码校验
+            String imageCodeToken = req.getImageCodeToken();
+            String imageCode = req.getImageCode();
+            RBucket<String> imgCodeBucket = redissonClient.getBucket(imageCodeToken);
+            // String imageCodeRedis = redisTemplate.opsForValue().get(imageCodeToken);
+            if (!imgCodeBucket.isExists()) {
+                return new CommonResp<>(false, "验证码已过期", null);
+            }
+            String redisImageCode = imgCodeBucket.get();
+            log.info("从redis中获取到的验证码：{}", imageCode);
+            // 验证码校验，大小写忽略，提升体验，比如Oo Vv Ww容易混
+            if (!redisImageCode.equalsIgnoreCase(imageCode)) {
+                return new CommonResp<>(false, "验证码不正确", null);
+            } else {
+                // 验证通过后，移除验证码
+                imgCodeBucket.deleteAsync();
 //            redisTemplate.delete(imageCodeToken);
+            }
         }
 //        confirmOrderService.doConfirm(req);
         beforeConfirmOrderService.beforeDoConfirm(req);
