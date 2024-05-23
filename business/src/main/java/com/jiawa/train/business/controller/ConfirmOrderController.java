@@ -14,6 +14,8 @@ import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,8 +63,9 @@ public class ConfirmOrderController {
             }
         }
 //        confirmOrderService.doConfirm(req);
-        beforeConfirmOrderService.beforeDoConfirm(req);
-        return new CommonResp<>();
+        Long id = beforeConfirmOrderService.beforeDoConfirm(req);
+
+        return new CommonResp<>(String.valueOf(id));
     }
 
     /** 降级方法，需包含限流方法的所有参数和BlockException参数，且返回值要保持一致
@@ -77,6 +80,12 @@ public class ConfirmOrderController {
         commonResp.setMessage(BusinessExceptionEnum.CONFIRM_ORDER_FLOW_EXCEPTION.getDesc());
         return commonResp;
 
+    }
+
+    @GetMapping()
+    public CommonResp<Integer> queryLineCount(@PathVariable Long id) {
+        Integer count = confirmOrderService.queryLineCount(id);
+        return new CommonResp<>(count);
     }
 
 }
