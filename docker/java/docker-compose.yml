@@ -1,0 +1,23 @@
+version: "3"
+services:
+  business:
+    # 指定容器名称
+    container_name: business
+    # 重启机制
+    restart: always
+    image: openjdk:17
+    volumes:
+      # 本地jar包路径
+      - ./business.jar:/business.jar
+      # 挂载日志 -v A:B ,A指宿主机位置，B指容器位置
+      - ./logs:/log
+      # 指定容器时间为宿主机时间
+      - /etc/localtime:/etc/localtime
+    # 访问端口
+    ports:
+      - "8002:8002"
+    environment:
+      # 指定时区
+      - TZ="Asia/Shanghai"
+    #启动容器后执行的命令
+    entrypoint: java -server -Xms256m -Xmx256m -jar  business.jar
