@@ -87,7 +87,7 @@ public class DailyTrainTicketService {
         //     去数据库取数据
         // }
         DailyTrainTicketExample dailyTrainTicketExample = new DailyTrainTicketExample();
-        dailyTrainTicketExample.setOrderByClause("id desc");
+        dailyTrainTicketExample.setOrderByClause("`date` desc, start_time asc, train_code asc, `start_index` asc, `end_index` asc");
         DailyTrainTicketExample.Criteria criteria = dailyTrainTicketExample.createCriteria();
         if (ObjUtil.isNotNull(req.getDate())) {
             criteria.andDateEqualTo(req.getDate());
